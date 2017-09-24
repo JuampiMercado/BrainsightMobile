@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View,StyleSheet, Image,Text,KeyboardAvoidingView,Dimensions } from 'react-native';
+import { View,StyleSheet, Image,Text,KeyboardAvoidingView,Dimensions,TouchableOpacity } from 'react-native';
 import LoginForm from './LoginForm';
 
 const ancho = Dimensions.get('window').width;
@@ -19,7 +19,9 @@ export default class Login extends Component{
           </View>
           <View style={styles.formContainer}>
             <LoginForm />
+
           </View>
+
 
       </KeyboardAvoidingView>
       </Image>
@@ -63,7 +65,6 @@ const styles= StyleSheet.create({
   formContainer:{
     paddingTop: 10
   }
-
 })
 
 
