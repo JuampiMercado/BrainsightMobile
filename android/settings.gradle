@@ -1,0 +1,3 @@
+rootProject.name = 'Brainsight'
+
+include ':app'
