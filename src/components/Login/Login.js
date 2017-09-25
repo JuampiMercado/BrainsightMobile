@@ -5,7 +5,7 @@ import LoginForm from './LoginForm';
 const ancho = Dimensions.get('window').width;
 const alto = Dimensions.get('window').height;
 
-export default class Login extends Component{
+class Login extends Component{
   render(){
     return(
       <Image
@@ -68,3 +68,4 @@ const styles= StyleSheet.create({
 })
 
 
+export default Login
