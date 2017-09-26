@@ -5,8 +5,10 @@ import LoginForm from './LoginForm';
 const ancho = Dimensions.get('window').width;
 const alto = Dimensions.get('window').height;
 
-class Login extends Component{
-  render(){
+//class Login extends Component{
+const Login = props =>{
+  //render(props){
+    const { navigate } = props.navigation;
     return(
       <Image
           style={styles.image}
@@ -18,7 +20,7 @@ class Login extends Component{
               <Image style={styles.logo} source={require('../../img/logo.png')}/>
           </View>
           <View style={styles.formContainer}>
-            <LoginForm />
+            <LoginForm navigation={props.navigation}  />
 
           </View>
 
@@ -27,7 +29,7 @@ class Login extends Component{
       </Image>
     );
 
-  }
+ // }
 }
 
 const styles= StyleSheet.create({
