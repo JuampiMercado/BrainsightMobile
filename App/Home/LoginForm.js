@@ -3,9 +3,9 @@ import { View,StyleSheet, Image, TextInput, TouchableOpacity, Text } from 'react
 import { StackNavigator } from "react-navigation";
 
 
-const LoginForm = props =>{
-  const { navigate } = props.navigation;
-  
+export default class LoginForm extends React.Component{
+  render() {
+    const { navigate } = this.props.navigation;
     return(
         <View style={styles.container}>
           <TextInput
@@ -27,22 +27,28 @@ const LoginForm = props =>{
             style={styles.input}
             ref={(input) => this.passwordInput = input}
           />
-          <TouchableOpacity style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>Login</Text>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={() => navigate("Main")}
+          >
+            <Text style={styles.buttonText}>Entrar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonContainer}
+          <TouchableOpacity
+            style={styles.buttonContainer}
             onPress={() => navigate("Register")}
           >
             <Text style={styles.buttonText}>Registrarse</Text>
           </TouchableOpacity>
         </View>
     );
-  
+  }
 }
 
 const styles= StyleSheet.create({
   container: {
-    padding:20
+    paddingLeft:20,
+    paddingRight:20,
+    paddingBottom: 0
   },
   input:{
     height:40,
@@ -64,5 +70,5 @@ const styles= StyleSheet.create({
 })
 
 
-export default LoginForm
+
 
