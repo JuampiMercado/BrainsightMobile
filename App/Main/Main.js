@@ -11,7 +11,9 @@ export default class Main extends React.Component {
     headerTintColor: '#FFF'
 
   });
+
   render(){
+
     const { navigate } = this.props.navigation;
     return(
 
@@ -24,11 +26,25 @@ export default class Main extends React.Component {
 }
 
 
+  var obj = new Object();
+  obj.name ='Juan Pablo';
+  obj.last_name ='Mercado';
+  obj.email = 'juampimercado@hotmail.com';
+  obj.gender = 'Male';
+  obj.DNI = '123456789';
+  obj.location = 'Buenos Aires';
+  obj.age = '25';
+  //var user =
+  //var user = JSON.stringify({name: 'Juan Pablo', last_name:'Mercado', email: 'juampimercado@hotmail.com', gender: 'Male', address: 'Calle falsa 123'})
+  var jsonUser = JSON.stringify(obj);
+
+
+
 
 const styles= StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#993366',
+    backgroundColor: '#FFF',//'#993366',
   },
   mainHeader: {
      backgroundColor: '#000000',
@@ -36,3 +52,4 @@ const styles= StyleSheet.create({
 
 })
 
+export { jsonUser };
