@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View,StyleSheet, Image, TextInput, TouchableOpacity, Text, AsyncStorage } from 'react-native';
 import { StackNavigator } from "react-navigation";
-
+import RailsApi from '../Config';
 
 export default class LoginForm extends React.Component{
   constructor(){
@@ -28,10 +28,11 @@ export default class LoginForm extends React.Component{
   }
   //Fin storeToken
   async onLoginPressed() {
+    this.props.;
+
     this.setState({showProgress: true})
     try {
-      debugger;
-      let response = await fetch('http://192.168.0.185:9292/api/login', {
+      let response = await fetch(RailsApi('login'), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -42,15 +43,6 @@ export default class LoginForm extends React.Component{
             password: this.state.password
           }),
         });
-        /*.then(function(response) {
-            console.log('OK: ' + response.json())
-            return response.json()
-        }).catch(function(err) {
-          debugger;
-          console.log('Err: ' +err)
-          return err;
-        });*/
-
       let res = await response.text();
       if (response.status >= 200 && response.status < 300) {
           //Handle success
@@ -58,14 +50,13 @@ export default class LoginForm extends React.Component{
           console.log(user);
           //On success we will store the access_token in the AsyncStorage
           this.storeToken(user);
-          this.props.navigation("Main")
+          this.props.navigation.navigate("Main")
       } else {
           //Handle error
           let error = res;
           throw error;
       }
     } catch(error) {
-        debugger;
         this.setState({error: error});
         console.log("error " + error);
         this.setState({showProgress: false});
@@ -77,6 +68,9 @@ export default class LoginForm extends React.Component{
     const { navigate } = this.props.navigation;
     return(
         <View style={styles.container}>
+          <Text style={styles.error}>
+            {this.state.error}
+          </Text>
           <TextInput
             onChangeText={ (text)=> this.setState({email: text}) }
             placeholder="Email"
@@ -99,6 +93,7 @@ export default class LoginForm extends React.Component{
             ref={(input) => this.passwordInput = input}
           />
           <TouchableOpacity
+            I
             onPress={this.onLoginPressed.bind(this)}
             style={styles.buttonContainer}
             //onPress={() => navigate("Main")}
@@ -111,11 +106,6 @@ export default class LoginForm extends React.Component{
           >
             <Text style={styles.buttonText}>Registrarse</Text>
           </TouchableOpacity>
-
-          <Text style={styles.error}>
-            {this.state.error}
-          </Text>
-
         </View>
     );
   }
