@@ -1,6 +1,7 @@
 'use strict';
 import React, {Component} from 'react';
-import { StyleSheet, TextInput, TouchableHighlight, AsyncStorage, Text, View, Image,Dimensions,KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, TextInput, TouchableHighlight, AsyncStorage, Text, View, Image,Dimensions,KeyboardAvoidingView,Keyboard } from 'react-native';
+import RailsApi from '../Config.js'
 
 const ancho = Dimensions.get('window').width;
 const alto = Dimensions.get('window').height;
@@ -15,22 +16,16 @@ class Register extends React.Component {
 
     this.state = {
       email: "",
-      name: "",
       password: "",
       password_confirmation: "",
       errors: [],
       showProgress: false,
     }
   }
-  redirect(routeName, accessToken){
-    this.props.navigator.push({
-      name: routeName
-    });
-  }
-
+  
   async storeToken(accessToken) {
     try {
-        await AsyncStorage.setItem(ACCESS_TOKEN, accessToken);
+        await AsyncStorage.setItem("User", accessToken);
         console.log("Token was stored successfull ");
     } catch(error) {
         console.log("Something went wrong");
@@ -39,7 +34,8 @@ class Register extends React.Component {
   async onRegisterPressed() {
     this.setState({showProgress: true})
     try {
-      let response = await fetch('https://afternoon-beyond-22141.herokuapp.com/api/users', {
+      Keyboard.dismiss();
+      let response = await fetch(RailsApi('signup'), {
                               method: 'POST',
                               headers: {
                                 'Accept': 'application/json',
@@ -47,7 +43,6 @@ class Register extends React.Component {
                               },
                               body: JSON.stringify({
                                 user:{
-                                  name: this.state.name,
                                   email: this.state.email,
                                   password: this.state.password,
                                   password_confirmation: this.state.password_confirmation,
@@ -61,7 +56,7 @@ class Register extends React.Component {
           console.log(accessToken);
           //On success we will store the access_token in the AsyncStorage
           this.storeToken(accessToken);
-          this.redirect('home');
+          this.props.navigation.navigate("Main")
       } else {
           //Handle error
           let error = res;
@@ -94,14 +89,10 @@ class Register extends React.Component {
         <View style={styles.logoContainer}>
                 <Image style={styles.logo} source={require('../../images/logo.png')}/>
         </View>
-
+        <Errors errors={this.state.errors}/>
         <TextInput
           onChangeText={ (text)=> this.setState({email: text}) }
           style={styles.input} placeholder="Email">
-        </TextInput>
-        <TextInput
-          onChangeText={ (text)=> this.setState({name: text}) }
-          style={styles.input} placeholder="Nombre">
         </TextInput>
         <TextInput
           onChangeText={ (text)=> this.setState({password: text}) }
@@ -120,10 +111,6 @@ class Register extends React.Component {
             Registrarse
           </Text>
         </TouchableHighlight>
-
-        <Errors errors={this.state.errors}/>
-
-
       </KeyboardAvoidingView>
       </Image>
     );

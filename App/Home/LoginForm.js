@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View,StyleSheet, Image, TextInput, TouchableOpacity, Text, AsyncStorage } from 'react-native';
+import { View,StyleSheet, Image, TextInput, TouchableOpacity, Text, AsyncStorage,Keyboard } from 'react-native';
 import { StackNavigator } from "react-navigation";
 import RailsApi from '../Config';
 
@@ -28,8 +28,8 @@ export default class LoginForm extends React.Component{
   }
   //Fin storeToken
   async onLoginPressed() {
-    this.props.;
-
+    debugger;
+    Keyboard.dismiss();
     this.setState({showProgress: true})
     try {
       let response = await fetch(RailsApi('login'), {
@@ -64,6 +64,11 @@ export default class LoginForm extends React.Component{
   }
   //fin onLoginPressed
 
+  onRegisterClick() {
+    Keyboard.dismiss();
+    this.props.navigation.navigate("Register");
+  }
+
   render() {
     const { navigate } = this.props.navigation;
     return(
@@ -96,13 +101,12 @@ export default class LoginForm extends React.Component{
             I
             onPress={this.onLoginPressed.bind(this)}
             style={styles.buttonContainer}
-            //onPress={() => navigate("Main")}
           >
             <Text style={styles.buttonText}>Entrar</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={() => navigate("Register")}
+            onPress={this.onRegisterClick.bind(this)}
           >
             <Text style={styles.buttonText}>Registrarse</Text>
           </TouchableOpacity>
