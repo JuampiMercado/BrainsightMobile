@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { Text,View,StyleSheet,TouchableOpacity } from 'react-native';
+import { Text,View,StyleSheet,TouchableOpacity,AsyncStorage } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import MainHeader from './MainHeaderNav'
 
 export default class Main extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: '',
+    headerLeft: null,
     headerRight: ( <MainHeader navigation={navigation} /> ),
     headerStyle: styles.mainHeader,
-    headerTintColor: '#FFF'
-
+    headerTintColor: '#FFF',
   });
 
   render(){
@@ -25,22 +25,6 @@ export default class Main extends React.Component {
   }
 }
 
-
-  var obj = new Object();
-  obj.name ='Juan Pablo';
-  obj.last_name ='Mercado';
-  obj.email = 'juampimercado@hotmail.com';
-  obj.gender = 'Male';
-  obj.DNI = '123456789';
-  obj.location = 'Buenos Aires';
-  obj.age = '25';
-  //var user =
-  //var user = JSON.stringify({name: 'Juan Pablo', last_name:'Mercado', email: 'juampimercado@hotmail.com', gender: 'Male', address: 'Calle falsa 123'})
-  var jsonUser = JSON.stringify(obj);
-
-
-
-
 const styles= StyleSheet.create({
   container: {
     flex: 1,
@@ -52,4 +36,4 @@ const styles= StyleSheet.create({
 
 })
 
-export { jsonUser };
+

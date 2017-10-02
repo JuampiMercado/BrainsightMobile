@@ -3,6 +3,8 @@ import { View,StyleSheet, Image, TextInput, TouchableOpacity, Text, AsyncStorage
 import { StackNavigator } from "react-navigation";
 import RailsApi from '../Config';
 
+
+
 export default class LoginForm extends React.Component{
   constructor(){
     super();
@@ -18,17 +20,14 @@ export default class LoginForm extends React.Component{
   storeToken(responseData){
     AsyncStorage.setItem("User", responseData, (err)=> {
       if(err){
-        console.log("an error");
         throw err;
       }
-      console.log("success");
     }).catch((err)=> {
         console.log("error is: " + err);
     });
   }
   //Fin storeToken
   async onLoginPressed() {
-    debugger;
     Keyboard.dismiss();
     this.setState({showProgress: true})
     try {
@@ -47,7 +46,6 @@ export default class LoginForm extends React.Component{
       if (response.status >= 200 && response.status < 300) {
           //Handle success
           let user = res;
-          console.log(user);
           //On success we will store the access_token in the AsyncStorage
           this.storeToken(user);
           this.props.navigation.navigate("Main")
@@ -58,7 +56,6 @@ export default class LoginForm extends React.Component{
       }
     } catch(error) {
         this.setState({error: error});
-        console.log("error " + error);
         this.setState({showProgress: false});
     }
   }

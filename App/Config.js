@@ -1,9 +1,9 @@
 var enviroment = 'DEV';
 //var enviroment = 'PROD';
-//var devAPI = "http://192.168.0.185:9292/api";
+var devAPI = "http://192.168.0.185:9292/api";
 var prodAPI = "https://brainsight-web.herokuapp.com/api";
 //HAMACHI
-var devAPI = "http://25.4.117.25:9292/api";
+//var devAPI = "http://25.4.117.25:9292/api";
 
 
 const RailsApi = (method) => {

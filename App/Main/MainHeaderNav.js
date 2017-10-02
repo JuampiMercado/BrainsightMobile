@@ -1,16 +1,30 @@
 import React, { Component } from 'react';
-import { Text,View,StyleSheet,TouchableOpacity } from 'react-native';
+import { Text,View,StyleSheet,TouchableOpacity, AsyncStorage } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 export default class MainHeaderNav extends React.Component {
+
+  onLogoutClick(){
+    AsyncStorage.removeItem('User');
+    this.props.navigation.navigate('Home');
+  }
+
   render(){
     const { navigate } = this.props.navigation;
     return(
+      // <View style={styles.container}>
+      //   <TouchableOpacity
+      //     style={ styles.touchable}
+      //     onPress={() => {navigate('Profile')} }
+      //   >
+      //     <Text style={ styles.text}>Perfil</Text>
+      //   </TouchableOpacity>
+      // </View>
       <View style={styles.container}>
         <TouchableOpacity
-          onPress={() => {navigate('Profile')} }
+          onPress={ this.onLogoutClick.bind(this) }
         >
-          <Text style={ styles.text}>Perfil</Text>
+          <Text style={ styles.text}>Cerrar Sesion</Text>
         </TouchableOpacity>
       </View>
     );
@@ -26,5 +40,5 @@ const styles= StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
     color: '#FFF'
-  }
+  },
 })

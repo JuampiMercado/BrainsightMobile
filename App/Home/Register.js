@@ -22,11 +22,10 @@ class Register extends React.Component {
       showProgress: false,
     }
   }
-  
+
   async storeToken(accessToken) {
     try {
         await AsyncStorage.setItem("User", accessToken);
-        console.log("Token was stored successfull ");
     } catch(error) {
         console.log("Something went wrong");
     }
@@ -53,7 +52,6 @@ class Register extends React.Component {
       if (response.status >= 200 && response.status < 300) {
           //Handle success
           let accessToken = res;
-          console.log(accessToken);
           //On success we will store the access_token in the AsyncStorage
           this.storeToken(accessToken);
           this.props.navigation.navigate("Main")
@@ -65,6 +63,7 @@ class Register extends React.Component {
     } catch(errors) {
       //errors are in JSON form so we must parse them first.
       let formErrors = JSON.parse(errors);
+
       //We will store all the errors in the array.
       let errorsArray = [];
       for(var key in formErrors) {

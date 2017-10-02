@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View,StyleSheet,Text } from 'react-native';
 import { jsonUser } from '../Main/Main'
 
-var user = JSON.parse(jsonUser);
+//var user = JSON.parse(jsonUser);
 
 export default class Profile extends React.Component {
   static navigationOptions = () => ({
