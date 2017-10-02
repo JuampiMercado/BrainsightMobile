@@ -6,32 +6,27 @@ import Register from './Home/Register'
 import Login from './Home/Login'
 import Main from './Main/Main'
 import Profile from './Profile/Profile'
-
+import Test from './TestView/Test'
 
 
 
 export default class HomeScreen extends React.Component {
   componentWillMount() {
-    this.getToken();
+    this.getUser();
   }
 
-  async getToken() {
+  async getUser() {
     try {
-      let accessToken = await AsyncStorage.getItem('User');
-      if (!accessToken) {
+      let user = await AsyncStorage.getItem('User');
+      if (!user) {
         console.log("Token not set");
       } else {
-        this.verifyToken(accessToken)
+        if (user != null && user != undefined){
+          this.props.navigation.navigate('Main');
+        }
       }
     } catch (error) {
       console.log("Something went wrong");
-    }
-  }
-
-  async verifyToken(token) {
-    let accessToken = token
-    if (accessToken != null && accessToken != undefined){
-      this.props.navigation.navigate('Main');
     }
   }
 
@@ -51,6 +46,7 @@ export const Brainsight = StackNavigator({
   Register: { screen: Register },
   Main: { screen: Main, navigation: HomeScreen.navigate },
   Profile: { screen: Profile },
+  Test: { screen: Test },
 });
 
 AppRegistry.registerComponent('Brainsight', () => Brainsight);
