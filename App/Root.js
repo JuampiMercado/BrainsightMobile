@@ -7,7 +7,7 @@ import Login from './Home/Login'
 import Main from './Main/Main'
 import Profile from './Profile/Profile'
 import Test from './TestView/Test'
-import TestManager from './TestView/TestManager'
+import ScreenManager from './TestView/ScreenManager'
 import StageManager from './TestView/StageManager'
 
 
@@ -49,8 +49,8 @@ export const Brainsight = StackNavigator({
   Main: { screen: Main, navigation: HomeScreen.navigate },
   Profile: { screen: Profile },
   Test: { screen: Test },
-  TestManager: { screen: TestManager},
-  StageManager: { screen: StageManager}
+  StageManager: { screen: StageManager},
+  ScreenManager: { screen: ScreenManager},
 });
 
 AppRegistry.registerComponent('Brainsight', () => Brainsight);

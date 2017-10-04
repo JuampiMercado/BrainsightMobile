@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text,TouchableOpacity,StyleSheet, AsyncStorage } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import RailsApi from '../Config';
-import TestManager from './TestManager'
+
 
 
 export default class Test extends React.Component {
@@ -26,13 +26,12 @@ export default class Test extends React.Component {
     return(
       <View style={styles.container}>
         <TouchableOpacity style={styles.testButton}
-          onPress={ () => { navigate('TestManager',{ test: this.state.test, user: this.state.user, currentStage: 0}) } }
+          onPress={ () => { navigate('StageManager',{ stages: this.state.test.data, currentStage: 0}) } }
           >
           <Text style={styles.textButton}>¡Empezar! </Text>
         </TouchableOpacity>
       </View>
       );
-//    <TestManager test={this.state.test}  />
   }
 }
 
@@ -58,5 +57,3 @@ const styles= StyleSheet.create({
     color: '#FFF'
   },
 })
-
-
