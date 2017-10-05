@@ -1,5 +1,5 @@
-//var enviroment = 'DEV';
-var enviroment = 'PROD';
+var enviroment = 'DEV';
+//var enviroment = 'PROD';
 var devAPI = "http://192.168.0.185:9292/api";
 var prodAPI = "https://brainsight-web.herokuapp.com/api";
 //HAMACHI

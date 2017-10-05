@@ -3,7 +3,7 @@ import {View, Text,TextInput, StyleSheet } from 'react-native';
 import Question from './Question';
 import TestText from './Text';
 import TestImage from './Image';
-import TestVideo from './Video';
+import TestVideo from './Video/Video';
 import TestAudio from './Audio'
 
 export default class Element extends React.Component {
@@ -31,7 +31,7 @@ export default class Element extends React.Component {
         element = (<TestImage id={this.state.id} {...this.state.config} />);
         break;
       case 'video':
-        element = (<TestVideo id={this.state.id} {...this.state.config} />);
+        element = (<TestVideo id={this.state.id} {...this.state.config} navigation={this.props.navigation} />);
         break;
       case 'audio':
         element = (<TestAudio id={this.state.id} {...this.state.config} />);

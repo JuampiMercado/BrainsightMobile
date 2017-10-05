@@ -42,7 +42,7 @@ export default class ScreenManager extends React.Component {
     const { navigate } = this.props.navigation;
     return(
       <View style={styles.container}>
-        <Screen screen={ this.state.screens[this.state.currentScreen]} />
+        <Screen screen={ this.state.screens[this.state.currentScreen]} navigation={ this.props.navigation } />
           <View>
             <TouchableOpacity style={styles.nextButton} onPress={ () => { this.GoTo() } } >
               <Text style={styles.textButton}>Continuar</Text>

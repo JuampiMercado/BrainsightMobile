@@ -197,15 +197,16 @@ var element6 = new Object();
 element6.type ='text';
 element6.config = { text: '¡Esto es un texto carajo!', color: 'red', size: 25 };
 var element7 = { type: 'image', config: { source: 'https://i2.wp.com/hipertextual.com/files/2015/10/conectoma-cerebro.jpg?resize=670%2C413&ssl=1' }};
-
+var element8 = { type: 'video', config: { source: 'https://vjs.zencdn.net/v/oceans.mp4' }};
 var screen1 = { type: 'screen', elements: [element1,element2], config: null };
 var screen2 = { type: 'screen', elements: [element3], config: null };
 var screen3 = { type: 'screen', elements: [element4], config: null };
 var screen4 = { type: 'screen', elements: [element5,element6], config: null };
 var screen5 = { type: 'screen', elements: [ element7], config: null};
+var screen6 = { type: 'screen', elements: [ element8], config: null};
 var stage1 = { type: 'stage', screens: [screen1,screen2], config: null };
 var stage2 = { type: 'stage', screens: [screen3,screen4], config: null };
-var stage3 = { type: 'stage', screens: [screen5], config:null }
+var stage3 = { type: 'stage', screens: [screen5, screen6], config:null }
 var prueba = { data: [stage1, stage2,stage3] };
 
 

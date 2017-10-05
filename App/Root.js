@@ -9,11 +9,12 @@ import Profile from './Profile/Profile'
 import Test from './TestView/Test'
 import ScreenManager from './TestView/ScreenManager'
 import StageManager from './TestView/StageManager'
-
-
+import VideoPlayerView from './TestView/Elements/Video/VideoPlayerView'
+import Orientation from 'react-native-orientation';
 
 export default class HomeScreen extends React.Component {
   componentWillMount() {
+    Orientation.lockToPortrait()
     this.getUser();
   }
 
@@ -51,6 +52,7 @@ export const Brainsight = StackNavigator({
   Test: { screen: Test },
   StageManager: { screen: StageManager},
   ScreenManager: { screen: ScreenManager},
+  VideoPlayerView: { screen: VideoPlayerView}
 });
 
 AppRegistry.registerComponent('Brainsight', () => Brainsight);
