@@ -2,6 +2,7 @@
 import React, {Component} from 'react';
 import { StyleSheet, TextInput, TouchableHighlight, AsyncStorage, Text, View, Image,Dimensions,KeyboardAvoidingView,Keyboard } from 'react-native';
 import RailsApi from '../Config.js'
+import { StackNavigator } from 'react-navigation';
 
 const ancho = Dimensions.get('window').width;
 const alto = Dimensions.get('window').height;
@@ -105,9 +106,14 @@ class Register extends React.Component {
           placeholder="Confirmar contraseña"
           secureTextEntry={true}>
         </TextInput>
-        <TouchableHighlight onPress={this.onRegisterPressed.bind(this)} style={styles.buttonContainer}>
+        <TouchableHighlight onPress={this.onRegisterPressed.bind(this) } style={styles.buttonContainer}>
           <Text style={styles.buttonText}>
             Registrarse
+          </Text>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={() => {this.props.navigation.navigate('Home')}} style={styles.buttonContainer}>
+          <Text style={styles.buttonText}>
+            Volver
           </Text>
         </TouchableHighlight>
       </KeyboardAvoidingView>

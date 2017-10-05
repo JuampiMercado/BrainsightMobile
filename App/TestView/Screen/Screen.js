@@ -1,7 +1,6 @@
 import React from 'react';
 import {View, Text,TextInput, StyleSheet, AsyncStorage } from 'react-native';
-import RailsApi from '../Config';
-import Element from './Elements/Element'
+import Element from '../Elements/Element'
 
 export default class Screen extends React.Component {
 

@@ -1,9 +1,11 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import { Text,View,StyleSheet,TouchableOpacity,AsyncStorage } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import MainHeader from './MainHeaderNav'
 import RailsApi from '../Config';
 import PTRView from 'react-native-pull-to-refresh';
+import BackHandlerAndroid from '../Handlers/BackHandlerAndroid'
+
 
 export default class Main extends React.Component {
   constructor(props){
@@ -19,6 +21,8 @@ export default class Main extends React.Component {
     this.GetUser();
     this.GetTests(3);
   }
+
+
 
   _refresh= () => {
     return new Promise((resolve) => {
@@ -83,6 +87,7 @@ export default class Main extends React.Component {
     var user = this.state.user;
     return(
         <PTRView onRefresh={this._refresh} >
+          <BackHandlerAndroid />
           <View style={styles.titleContainer}>
               <Text style={styles.title}>Seleccione un test</Text>
           </View>
@@ -180,13 +185,13 @@ element.config = { source: null };
 
 var element1 = new Object();
 element1.type ='question';
-element1.config = { question: '¿Esta es la primera pregunta?', answer: '', type: 'open', options: [] };
+element1.config = { question: '¿Argentina esta clasificada para el mundial?', answer: '', type: 'tof', options: [] };
 var element2 = new Object();
 element2.type ='question';
-element2.config = { question: '¿Esta es la segunda pregunta?', answer: '', type: 'open', options: [] };
+element2.config = { question: '¿Argentina le gana a Perú?', answer: '', type: 'mc', options: ['Si','No','Resuciten a Don Julio'] };
 var element3 = new Object();
 element3.type ='question';
-element3.config = { question: '¿Esta es la tercera pregunta?', answer: '', type: 'open', options: [] };
+element3.config = { question: '¿Que tanto te gusta como juega la selección?', answer: '', type: 'likert', options: [0,10,0.1] };
 var element4 = new Object();
 element4.type ='question';
 element4.config = { question: '¿Esta es la cuarta pregunta?', answer: '', type: 'open', options: [] };
@@ -198,7 +203,7 @@ element6.type ='text';
 element6.config = { text: '¡Esto es un texto carajo!', color: 'red', size: 25 };
 var element7 = { type: 'image', config: { source: 'https://i2.wp.com/hipertextual.com/files/2015/10/conectoma-cerebro.jpg?resize=670%2C413&ssl=1' }};
 var element8 = { type: 'video', config: { source: 'https://vjs.zencdn.net/v/oceans.mp4' }};
-var screen1 = { type: 'screen', elements: [element1,element2], config: null };
+var screen1 = { type: 'screen', elements: [element1,element2,element3], config: null };
 var screen2 = { type: 'screen', elements: [element3], config: null };
 var screen3 = { type: 'screen', elements: [element4], config: null };
 var screen4 = { type: 'screen', elements: [element5,element6], config: null };

@@ -3,7 +3,7 @@ import {View, Text,TextInput, StyleSheet } from 'react-native';
 import Question from './Question';
 import TestText from './Text';
 import TestImage from './Image';
-import TestVideo from './Video/Video';
+import TestVideo from './Video';
 import TestAudio from './Audio'
 
 export default class Element extends React.Component {

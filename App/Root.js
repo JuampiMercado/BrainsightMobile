@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppRegistry, AsyncStorage } from 'react-native';
+import { View, AppRegistry, AsyncStorage } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 import Register from './Home/Register'
@@ -7,16 +7,23 @@ import Login from './Home/Login'
 import Main from './Main/Main'
 import Profile from './Profile/Profile'
 import Test from './TestView/Test'
-import ScreenManager from './TestView/ScreenManager'
-import StageManager from './TestView/StageManager'
-import VideoPlayerView from './TestView/Elements/Video/VideoPlayerView'
+import ScreenManager from './TestView/Screen/ScreenManager'
+import StageManager from './TestView/Stage/StageManager'
+import VideoPlayerView from './TestView/Elements/VideoPlayerView'
 import Orientation from 'react-native-orientation';
 
+
 export default class HomeScreen extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+
   componentWillMount() {
     Orientation.lockToPortrait()
     this.getUser();
   }
+
 
   async getUser() {
     try {

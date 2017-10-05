@@ -1,6 +1,5 @@
 import React from 'react';
 import {View,TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
-import VideoPlayer from 'react-native-video-controls'
 import Orientation from 'react-native-orientation'
 import { StackNavigator } from 'react-navigation';
 
@@ -11,11 +10,12 @@ export default class TestVideo extends React.Component {
     this.state = {
       id: this.props.id,
       source: this.props.source ,
+      title: this.props.title
     }
   }
 
   playVideo(){
-    this.props.navigation.navigate('VideoPlayerView', {source: {uri: this.state.source }} );
+    this.props.navigation.navigate('VideoPlayerView', {source: {uri: this.state.source }, title: this.state.title} );
   }
 
   render(){
@@ -38,8 +38,5 @@ const styles= StyleSheet.create({
   text:{
     textAlign:'center',
     color:'#FFF',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
   }
 })

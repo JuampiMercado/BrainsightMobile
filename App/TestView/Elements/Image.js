@@ -1,8 +1,5 @@
 import React from 'react';
-import {Image, StyleSheet, Dimensions } from 'react-native';
-
-
-const alto = Dimensions.get('window').height;
+import { View, Image, StyleSheet, Dimensions } from 'react-native';
 
 export default class TestImage extends React.Component {
 
@@ -18,7 +15,9 @@ export default class TestImage extends React.Component {
   render(){
     //var source = require(this.state.source);
     return (
-        <Image source={{uri: this.state.source}} style={styles.image}></Image>
+        <View>
+          <Image source={{uri: this.state.source}} style={styles.image}></Image>
+        </View>
     );
   }
 }
@@ -26,7 +25,7 @@ export default class TestImage extends React.Component {
 const styles= StyleSheet.create({
   image:{
     paddingTop:20,
-    height: alto - 400,
+    height: Dimensions.get('window').height *0.4,
     resizeMode: 'contain',
   }
 })

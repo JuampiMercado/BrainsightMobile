@@ -1,6 +1,5 @@
 import React from 'react';
 import {Text,View,Button, StyleSheet, AsyncStorage } from 'react-native';
-import RailsApi from '../Config';
 import { StackNavigator } from 'react-navigation';
 
 

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { View, StyleSheet, } from 'react-native';
+import { Text, View, StyleSheet, } from 'react-native';
 import VideoPlayer from 'react-native-video-controls';
 import Orientation from 'react-native-orientation';
 
@@ -17,7 +17,7 @@ export default class VideoPlayerView extends Component {
     }
 
     componentWillMount(){
-        Orientation.lockToLandscape()
+        Orientation.lockToLandscape();
     }
     _back(){
         const {goBack} = this.props.navigation;
@@ -28,10 +28,10 @@ export default class VideoPlayerView extends Component {
         return (
             <View style={styles.container}>
                 <VideoPlayer
-                    //source={require('../videos/video.mp4')}
                     source={ this.state.source }
-                    title={this.props.title}
+                    title={this.state.title}
                     onBack={() => this._back()}
+                    resizeMode={'cover'} //Esto lo hace ocupar la pantalla completa
                 />
             </View>
         )
