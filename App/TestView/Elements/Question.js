@@ -16,11 +16,18 @@ export default class Question extends React.Component {
     }
   }
 
+  SaveState(value)
+  {
+    var element = this.props.id;
+    this.props.SaveState(element,value);
+  }
+
   render(){
     return (
         <View>
           <Text key={'Text-' + this.state.id}>{this.state.question}</Text>
-          <Answer id={this.state.id} answer={this.state.answer} type={this.state.type} options={this.state.options} />
+          {/* <Answer id={this.state.id} answer={this.state.answer} type={this.state.type} options={this.state.options} SaveState={this.SaveState.bind(this)} /> */}
+          <Answer {...this.state} SaveState={this.SaveState.bind(this)} />
         </View>
     );
   }
@@ -33,7 +40,8 @@ class Answer extends React.Component{
       id: this.props.id,
       answer: this.props.answer,
       type: this.props.type,
-      options: this.props.options
+      options: this.props.options,
+      SaveState: this.props.SaveState
     }
   }
   /*
@@ -72,7 +80,9 @@ class OpenAnswer extends React.Component{
     }
   }
   render(){
-    return <TextInput key={'TextInput-' + this.state.id} >{this.state.answer}</TextInput>
+    return <TextInput
+      onChangeText={(value) => {this.props.SaveState(value)}}
+    key={'TextInput-' + this.state.id} >{this.state.answer}</TextInput>
   }
 }
 
@@ -89,14 +99,18 @@ class TrueOrFalse extends React.Component{
       {label: 'Falso', value: false },
       {label: 'Verdadero', value: true }
     ];
-
+    //Inicia en false, asi que lo pongo en false
     return (
       <View style={styles.radioButton}>
         <RadioForm
             formHorizontal={true}
             animation={true}
             radio_props={radio_props}
-            onPress={(value) => {this.setState({value:value})}}
+            initial={false}
+            onPress={(value) => {
+              this.setState({value:value});
+              this.props.SaveState(value);
+            }}
             borderWidth={1}
             buttonSize={10}
             buttonOuterSize={20}
@@ -118,18 +132,28 @@ class MultipleChoice extends React.Component{
       id: this.props.id,
       answer: this.props.answer,
       options: this.props.options,
-      checked: false
     }
+    this.ConcatAnswers = this.ConcatAnswers.bind(this);
+  }
+
+  ConcatAnswers(element,option,checked){
+    var str = (this.state.answer == undefined ? '': this.state.answer);
+    if(checked)
+      str = str + option + '|';
+    else
+      str = String(str).replace(option + '|','');
+    this.setState({answer: str});
+    this.props.SaveState(str);
   }
 
   render(){
     var options = this.state.options;
     return (
         <View>
-            {options.map(function(element, i){
+            {options.map((element, i) =>{
                 return(
                   <View style={styles.checkOptions} key={'CheckBox-' + i}>
-                    <Check id={i} option={element} />
+                    <Check id={i} option={element} ConcatAnswers={this.ConcatAnswers}  />
                   </View>
                 );
               })
@@ -150,7 +174,6 @@ class Check extends React.Component{
     }
   }
   render(){
-    debugger;
     return (
       <CheckBox
           key={this.state.id}
@@ -162,7 +185,12 @@ class Check extends React.Component{
           containerStyle={{backgroundColor: 'transparent', borderWidth: 0}}
           uncheckedColor='#000'
           checkedColor='#000'
-          onPress={() => {this.setState({checked: !this.state.checked})}}
+          onPress={
+            () => {
+              this.setState({checked: !this.state.checked});
+              this.props.ConcatAnswers(this.state.id,this.state.option,!this.state.checked);
+            }
+          }
       />
     );
   }
@@ -177,7 +205,7 @@ class Likert extends React.Component{
       id: this.props.id,
       answer: this.props.answer,
       options: this.props.options,
-      value: 0,
+      value: 0
     }
   }
 
@@ -192,7 +220,14 @@ class Likert extends React.Component{
             minimumValue={this.state.options[0]}
             maximumValue={this.state.options[1]}
             step={this.state.options[2]}
-            onValueChange={(value) => {this.setState({value: roundTo(value,2)})}} />
+            onValueChange={
+              (value) =>
+              {
+                this.setState({value: roundTo(value,2)});
+                this.props.SaveState(roundTo(value,2));
+              }
+            }
+            />
           <Text>Valor: {this.state.value}</Text>
         </View>
     );

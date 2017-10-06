@@ -27,20 +27,29 @@ export default class StageManager extends React.Component {
     if( this.state.currentStage <= this.state.lastStage ){
       //Todavia no pase por todas las etapas
       var screens = this.state.stages[this.state.currentStage].screens;//[screens]: Array of screens
-      this.props.navigation.navigate('ScreenManager', { screens: screens, currentScreen: 0, stages: this.state.stages, currentStage: this.state.currentStage, lastStage: this.state.lastStage } );
+      this.props.navigation.navigate('ScreenManager',
+        {
+          screens: screens,
+          currentScreen: 0,
+          stages: this.state.stages,
+          currentStage: this.state.currentStage,
+          lastStage: this.state.lastStage,
+          SaveState: this.SaveState.bind(this)
+        }
+      );
       this.setState({show: <Text>Cargando etapa {this.state.currentStage + 1}</Text>})
     }
     else{
-      this.setState(
-        {show:
-          <View>
-            <Text>Gracias por colaborar</Text>
-            <Button onPress={ () => { this.PersisResults(); } } title="Enviar respuesta" color="#000" />
-          </View>
-        }
-      );
+      var resultados = this.state.stages;
+      this.setState({show: <View><Text>Gracias por colaborar</Text><Button onPress={ () => { this.PersisResults(); } } title="Enviar respuesta" color="#000" /></View>});
       //voy a tener que navegar a una pantalla de fin de test
     }
+  }
+
+  SaveState(screen,element,value){
+    var stages = this.state.stages;
+    stages[this.state.currentStage].screens[screen].elements[element].config.result = value;
+    this.setState({stages: stages});
   }
 
   PersisResults()

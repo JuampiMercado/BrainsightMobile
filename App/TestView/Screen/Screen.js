@@ -14,12 +14,13 @@ export default class Screen extends React.Component {
   render(){
     var screen = this.state.screen.elements;
     const { navigation } = this.props;
+    const { SaveState } = this.props;
     return (
         <View style={styles.container}>
             {screen.map(function(element, i){
                 return(
                   <View key={'View1-' + i} style={styles.elementContainer} >
-                    <Element id={i} type={ element.type } config={element.config}  navigation={navigation} />
+                    <Element id={i} type={ element.type } config={element.config}  navigation={navigation} SaveState={SaveState}/>
                   </View>
                 );
               })

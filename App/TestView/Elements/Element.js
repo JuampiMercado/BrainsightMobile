@@ -19,13 +19,12 @@ export default class Element extends React.Component {
 
   render(){
     var element = '';
-    debugger;
     switch(this.state.type){
       case 'text':
         element = (<TestText id={this.state.id} {...this.state.config} />);
         break;
       case 'question':
-        element = (<Question id={this.state.id} {...this.state.config} />);
+        element = (<Question id={this.state.id} {...this.state.config} SaveState={this.props.SaveState}/>);
         break;
       case 'image':
         element = (<TestImage id={this.state.id} {...this.state.config} />);

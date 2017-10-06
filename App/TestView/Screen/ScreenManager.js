@@ -33,15 +33,29 @@ export default class ScreenManager extends React.Component {
     }
     else
     {
-      this.props.navigation.navigate('ScreenManager',{ screens: this.state.screens, currentScreen: this.state.currentScreen + 1, stages: this.state.stages, currentStage: this.state.currentStage, lastStage: this.state.lastStage });
+      this.props.navigation.navigate('ScreenManager',
+        {
+          screens: this.state.screens,
+          currentScreen: this.state.currentScreen + 1,
+          stages: this.state.stages,
+          currentStage: this.state.currentStage,
+          lastStage: this.state.lastStage,
+          SaveState: this.props.navigation.state.params.SaveState
+        }
+      );
     }
+  }
+
+  SaveState(element,value)
+  {
+    this.props.navigation.state.params.SaveState(this.state.currentScreen,element,value);
   }
 
   render(){
     const { navigate } = this.props.navigation;
     return(
       <View style={styles.container}>
-        <Screen screen={ this.state.screens[this.state.currentScreen]} navigation={ this.props.navigation } />
+        <Screen screen={ this.state.screens[this.state.currentScreen]} navigation={ this.props.navigation } SaveState={this.SaveState.bind(this)} />
           <View>
             <TouchableOpacity style={styles.nextButton} onPress={ () => { this.GoTo() } } >
               <Text style={styles.textButton}>Continuar</Text>
