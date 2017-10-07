@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { Text,View,StyleSheet,TouchableOpacity, AsyncStorage } from 'react-native';
+import { Text,View,StyleSheet,TouchableHighlight, AsyncStorage } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 
 export default class MainHeaderNav extends React.Component {
 
   onLogoutClick(){
-    AsyncStorage.removeItem('User');
+    AsyncStorage.removeItem('user');
     this.props.navigation.navigate('Home');
   }
 
@@ -21,11 +21,11 @@ export default class MainHeaderNav extends React.Component {
       //   </TouchableOpacity>
       // </View>
       <View style={styles.container}>
-        <TouchableOpacity
+        <TouchableHighlight
           onPress={ this.onLogoutClick.bind(this) }
         >
           <Text style={ styles.text}>Cerrar Sesion</Text>
-        </TouchableOpacity>
+        </TouchableHighlight>
       </View>
     );
 

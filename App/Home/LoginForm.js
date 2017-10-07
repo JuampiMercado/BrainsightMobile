@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View,StyleSheet, Image, TextInput, TouchableOpacity, Text, AsyncStorage,Keyboard } from 'react-native';
+import { View,StyleSheet, Image, TextInput, TouchableHighlight, Text, AsyncStorage,Keyboard } from 'react-native';
 import { StackNavigator } from "react-navigation";
 import RailsApi from '../Config';
 
@@ -17,8 +17,8 @@ export default class LoginForm extends React.Component{
     }
   }
 
-  storeToken(responseData){
-    AsyncStorage.setItem("User", responseData, (err)=> {
+  async SaveUser(responseData){
+    await AsyncStorage.setItem('user', responseData, (err)=> {
       if(err){
         throw err;
       }
@@ -47,7 +47,7 @@ export default class LoginForm extends React.Component{
           //Handle success
           let user = res;
           //On success we will store the access_token in the AsyncStorage
-          this.storeToken(user);
+          this.SaveUser(user);
           this.props.navigation.navigate("Main")
       } else {
           //Handle error
@@ -94,19 +94,19 @@ export default class LoginForm extends React.Component{
             style={styles.input}
             ref={(input) => this.passwordInput = input}
           />
-          <TouchableOpacity
+          <TouchableHighlight
             I
             onPress={this.onLoginPressed.bind(this)}
             style={styles.buttonContainer}
           >
             <Text style={styles.buttonText}>Entrar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </TouchableHighlight>
+          <TouchableHighlight
             style={styles.buttonContainer}
             onPress={this.onRegisterClick.bind(this)}
           >
             <Text style={styles.buttonText}>Registrarse</Text>
-          </TouchableOpacity>
+          </TouchableHighlight>
         </View>
     );
   }

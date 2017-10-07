@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text,TouchableOpacity,StyleSheet, AsyncStorage } from 'react-native';
+import { View, Text,TouchableHighlight,StyleSheet, AsyncStorage } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import RailsApi from '../Config';
 
@@ -13,6 +13,7 @@ export default class Test extends React.Component {
       test: this.props.navigation.state.params.test,
       user: this.props.navigation.state.params.user
     }
+    this.GetTest();
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -21,15 +22,39 @@ export default class Test extends React.Component {
     headerTintColor: '#FFF',
   });
 
+  async GetTest(){
+     //Search test on AsyncStorage
+     debugger;
+    var test = this.state.test;
+    try {
+      let storTest = await AsyncStorage.getItem('test-' + this.state.test.id);
+      if (!storTest) {
+        console.log("Token not set");
+      } else {
+        if (storTest != null && storTest != undefined){
+          test.data = JSON.parse(storTest);
+          this.setState({test: test});
+        }
+      }
+    } catch (error) {
+      console.log("Something went wrong");
+    }
+    return test;
+  }
+
+  componentDidMount(){
+
+  }
+
   render(){
     const { navigate } = this.props.navigation;
     return(
       <View style={styles.container}>
-        <TouchableOpacity style={styles.testButton}
-          onPress={ () => { navigate('StageManager',{ stages: this.state.test.data, currentStage: 0}) } }
+        <TouchableHighlight style={styles.testButton}
+          onPress={ () => { navigate('StageManager',{ testID: this.state.test.id, stages: this.state.test.data, currentStage: 0}) } }
           >
           <Text style={styles.textButton}>¡Empezar! </Text>
-        </TouchableOpacity>
+        </TouchableHighlight>
       </View>
       );
   }

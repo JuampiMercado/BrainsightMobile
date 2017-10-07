@@ -10,10 +10,20 @@ export default class Question extends React.Component {
     this.state = {
       id: this.props.id,
       question: this.props.question,
-      answer: this.props.answer,
+      result: this.props.result,
       type: this.props.type,
       options: this.props.options,
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.question !== nextState.question) {
+      return true;
+    }
+    if (this.state.id !== nextState.id) {
+      return true;
+    }
+    return false;
   }
 
   SaveState(value)
@@ -26,8 +36,7 @@ export default class Question extends React.Component {
     return (
         <View>
           <Text key={'Text-' + this.state.id}>{this.state.question}</Text>
-          {/* <Answer id={this.state.id} answer={this.state.answer} type={this.state.type} options={this.state.options} SaveState={this.SaveState.bind(this)} /> */}
-          <Answer {...this.state} SaveState={this.SaveState.bind(this)} />
+           <Answer {...this.state} SaveState={this.SaveState.bind(this)} />
         </View>
     );
   }
@@ -38,7 +47,7 @@ class Answer extends React.Component{
     super(props);
     this.state = {
       id: this.props.id,
-      answer: this.props.answer,
+      result: this.props.result,
       type: this.props.type,
       options: this.props.options,
       SaveState: this.props.SaveState
@@ -76,13 +85,12 @@ class OpenAnswer extends React.Component{
     super(props);
     this.state = {
       id: this.props.id,
-      answer: this.props.answer
+      result: this.props.result
     }
   }
   render(){
-    return <TextInput
-      onChangeText={(value) => {this.props.SaveState(value)}}
-    key={'TextInput-' + this.state.id} >{this.state.answer}</TextInput>
+    return <TextInput onChangeText={(value) => {this.props.SaveState(value)}} key={'TextInput-' + this.state.id} >{this.state.result}</TextInput>
+    //return <TextInput onChangeText={(value) => {this.props.SaveState(value)}} key={'TextInput-' + this.state.id} ></TextInput>
   }
 }
 
@@ -91,22 +99,19 @@ class TrueOrFalse extends React.Component{
     super(props);
     this.state = {
       id: this.props.id,
-      answer: this.props.answer
+      result: this.props.result,
+      options: [{label: 'Falso', value: false }, {label: 'Verdadero', value: true }],
+      initial: ((this.props.result != null && this.props.result != undefined) ? (this.props.result? 1 : 0) : false)
     }
   }
   render(){
-    var radio_props = [
-      {label: 'Falso', value: false },
-      {label: 'Verdadero', value: true }
-    ];
-    //Inicia en false, asi que lo pongo en false
     return (
       <View style={styles.radioButton}>
         <RadioForm
             formHorizontal={true}
-            animation={true}
-            radio_props={radio_props}
-            initial={false}
+            animation={false}
+            radio_props={ this.state.options}
+            initial={this.state.initial}
             onPress={(value) => {
               this.setState({value:value});
               this.props.SaveState(value);
@@ -117,7 +122,6 @@ class TrueOrFalse extends React.Component{
             buttonWrapStyle={{marginLeft: 5, marginRight:10}}
             buttonColor={'#000'}
             labelStyle={{paddingRight: 10}}
-
         >
         </RadioForm>
       </View>
@@ -130,19 +134,24 @@ class MultipleChoice extends React.Component{
     super(props);
     this.state = {
       id: this.props.id,
-      answer: this.props.answer,
+      result: this.props.result,
       options: this.props.options,
     }
     this.ConcatAnswers = this.ConcatAnswers.bind(this);
   }
 
   ConcatAnswers(element,option,checked){
-    var str = (this.state.answer == undefined ? '': this.state.answer);
-    if(checked)
-      str = str + option + '|';
-    else
+    var str = (this.state.result == undefined ? '': this.state.result);
+    if(checked){
+      //if is already inserted, don't insert again
+      if( str.split('|').indexOf(option) == -1){
+        str = str + option + '|';
+      }
+    }
+    else{
       str = String(str).replace(option + '|','');
-    this.setState({answer: str});
+    }
+    this.setState({result: str});
     this.props.SaveState(str);
   }
 
@@ -151,9 +160,10 @@ class MultipleChoice extends React.Component{
     return (
         <View>
             {options.map((element, i) =>{
+                var array = (this.state.result != undefined && this.state.result != null)? this.state.result.split('|') : [];
                 return(
                   <View style={styles.checkOptions} key={'CheckBox-' + i}>
-                    <Check id={i} option={element} ConcatAnswers={this.ConcatAnswers}  />
+                    <Check id={i} option={element} ConcatAnswers={this.ConcatAnswers} checked={(array.indexOf(element) != -1)}  />
                   </View>
                 );
               })
@@ -170,7 +180,7 @@ class Check extends React.Component{
     this.state = {
       id:this.props.id,
       option: this.props.option,
-      checked: false
+      checked: ((this.props.checked != undefined && this.props.checked != null) ? this.props.checked : false)
     }
   }
   render(){
@@ -203,15 +213,14 @@ class Likert extends React.Component{
     super(props);
     this.state = {
       id: this.props.id,
-      answer: this.props.answer,
+      result: this.props.result,
       options: this.props.options,
-      value: 0
+      value: ((this.props.result == null || this.props.result == undefined|| this.props.result == '') ? 0 : this.props.result)
     }
   }
 
   render(){
     const roundTo = require('round-to');
-    var options = this.state.options;
     return (
         <View style={styles.likert}>
           <Slider

@@ -19,7 +19,7 @@ export default class HomeScreen extends React.Component {
   }
 
 
-  componentWillMount() {
+  componentDidMount() {
     Orientation.lockToPortrait()
     this.getUser();
   }
@@ -27,13 +27,9 @@ export default class HomeScreen extends React.Component {
 
   async getUser() {
     try {
-      let user = await AsyncStorage.getItem('User');
-      if (!user) {
-        console.log("Token not set");
-      } else {
-        if (user != null && user != undefined){
-          this.props.navigation.navigate('Main');
-        }
+      var user =await AsyncStorage.getItem('user');
+      if (user && user != null && user != undefined){
+        this.props.navigation.navigate('Main', {user: user} );
       }
     } catch (error) {
       console.log("Something went wrong");

@@ -24,9 +24,9 @@ class Register extends React.Component {
     }
   }
 
-  async storeToken(accessToken) {
+  async SaveUser(user) {
     try {
-        await AsyncStorage.setItem("User", accessToken);
+        await AsyncStorage.setItem('user', user);
     } catch(error) {
         console.log("Something went wrong");
     }
@@ -52,9 +52,9 @@ class Register extends React.Component {
       let res = await response.text();
       if (response.status >= 200 && response.status < 300) {
           //Handle success
-          let accessToken = res;
+          let user = res;
           //On success we will store the access_token in the AsyncStorage
-          this.storeToken(accessToken);
+          this.SaveUser(user);
           this.props.navigation.navigate("Main")
       } else {
           //Handle error

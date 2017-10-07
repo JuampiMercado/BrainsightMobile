@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Text,View,StyleSheet,TouchableOpacity,AsyncStorage } from 'react-native';
+import { Text,View,StyleSheet,TouchableHighlight,AsyncStorage } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import MainHeader from './MainHeaderNav'
 import RailsApi from '../Config';
@@ -18,19 +18,7 @@ export default class Main extends React.Component {
       refreshing: false,
 
     }
-    this.GetUser();
-    this.GetTests(3);
-  }
-
-
-
-  _refresh= () => {
-    return new Promise((resolve) => {
-      this.setState({testsList: [], user: "", error: ""});
-      this.GetUser();
-      this.GetTests(3);
-      setTimeout(()=>{resolve()}, 2000)
-    });
+    this.goToTest = this.goToTest.bind(this);
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -41,22 +29,50 @@ export default class Main extends React.Component {
     headerTintColor: '#FFF',
   });
 
-  async GetUser(){
-    let user = await AsyncStorage.getItem('User');
-    if (user){
-      this.setState({user: JSON.parse(user)});
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.testsList !== nextState.testsList) {
+      return true;
+    }
+    if (this.state.user !== nextState.user) {
+      return true;
+    }
+    return false;
+  }
+
+  componentWillMount(){
+    var user = '';
+    try
+    {
+      user = this.props.navigation.state.params.user;
+    }
+    catch(er)
+    {
+      user = AsyncStorage.getItem('user');
+    }
+    if(user)
+    {
+      this.setState({user: user});
     }
     else{
       this.props.navigation.navigate('Home');
     }
+    this.GetTests(3);
   }
+
+  _refresh= () => {
+    return new Promise((resolve) => {
+      this.setState({testsList: [], error: ""});
+      this.GetTests(3);
+      setTimeout(()=>{resolve()}, 2000)
+    });
+  }
+
 
   async GetTests(intentos) {
     if (intentos == 0){
       this.setState({error: 'No se han podido descargar test. Por favor, intentelo de nuevo más tarde.'})
       return;
     }
-
     try {
       let response = await fetch(RailsApi('test'), {
         method: 'post',
@@ -81,10 +97,20 @@ export default class Main extends React.Component {
     }
   }
 
+  goToTest(test){
+    //Add completed property to stages and screens before execute test.
+    test = JSON.parse(test);
+    test.data.map((stage, i) => {
+      stage.completed = false;
+      stage.screens.map((screen,j) =>{
+        screen.completed = false;
+      });
+    });
+    this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
+  }
 
   render(){
-    const { navigate } = this.props.navigation;
-    var user = this.state.user;
+    //const { navigate } = this.props.navigation;
     return(
         <PTRView onRefresh={this._refresh} >
           <BackHandlerAndroid />
@@ -95,14 +121,14 @@ export default class Main extends React.Component {
             {this.state.error}
           </Text>
           <View>
-          {this.state.testsList.map(function(test, i){
+          {this.state.testsList.map((test, i) => {
               return(
                 <View style={styles.testContainer} key={test.id}>
-                  <TouchableOpacity style={styles.testButton}
-                    onPress={ () => { navigate('Test',{ test: prueba, user: user}) } }
+                  <TouchableHighlight style={styles.testButton}
+                    onPress={ () => { this.goToTest(prueba) } }
                     >
                     <Text style={styles.textButton}>{test.name} </Text>
-                  </TouchableOpacity>
+                  </TouchableHighlight>
                 </View>
               );
             })
@@ -116,7 +142,7 @@ export default class Main extends React.Component {
 const styles= StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF',//'#993366',
+    backgroundColor: '#FFF',
   },
   mainHeader: {
      backgroundColor: '#000000',
@@ -166,10 +192,12 @@ test.data = []; //data es el campo del json de la base. Va a ser un array de sta
 element.type = 'stage';
 element.screens = []
 element.config = { /* configuraciones*/ };
+element.completed = false;
 //pantallas
 element.type = 'screen';
 element.elements = [];
 element.config = { /*configuraciones*/ };
+element.completed = false;
 //elementos
 element.type = 'text';
 element.config = { text: null, size: null, color: null };
@@ -212,7 +240,7 @@ var screen6 = { type: 'screen', elements: [ element8], config: null};
 var stage1 = { type: 'stage', screens: [screen1,screen2], config: null };
 var stage2 = { type: 'stage', screens: [screen3,screen4], config: null };
 var stage3 = { type: 'stage', screens: [screen5, screen6], config:null }
-var prueba = { data: [stage1, stage2,stage3] };
+var prueba = JSON.stringify({ id: 2, data: [stage1, stage2,stage3] });
 
 
 

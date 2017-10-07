@@ -15,3 +15,4 @@
 #npm i react-native-vector-icons --save && react-native link react-native-vector-icons
 #npm i react-native-elements --save
 #npm install --save round-to
+#npm i babel-plugin-transform-remove-console --save
