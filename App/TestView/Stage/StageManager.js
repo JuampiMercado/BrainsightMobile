@@ -1,5 +1,6 @@
 import React from 'react';
-import {Text,View,TouchableHighlight, StyleSheet, AsyncStorage } from 'react-native';
+import {Text,View,TouchableHighlight, StyleSheet, AsyncStorage,Alert } from 'react-native';
+import RailsApi from '../../Config';
 import { StackNavigator } from 'react-navigation';
 
 
@@ -10,6 +11,7 @@ export default class StageManager extends React.Component {
     var params = this.props.navigation.state.params;
     //this.state.test: Array of stages
     this.state = {
+      user: params.user,
       testID: params.testID,
       stages: params.stages,
       currentStage: params.currentStage,
@@ -68,6 +70,7 @@ export default class StageManager extends React.Component {
 
       this.props.navigation.navigate('ScreenManager',
         {
+          user: this.state.user,
           testID: this.state.testID,
           screens: this.state.stages[currentStage].screens,//[screens]: Array of screens
           currentScreen: currentScreen,
@@ -76,14 +79,15 @@ export default class StageManager extends React.Component {
           lastStage: this.state.lastStage,
           SaveState: this.SaveState.bind(this),
           SaveAsyncStorage: this.SaveAsyncStorage.bind(this),
-          SetCompleteElement: this.SetCompleteElement.bind(this)
+          SetCompleteElement: this.SetCompleteElement.bind(this),
+          PersistResults: this.PersistResults.bind(this)
         }
       );
       this.setState({show: <Text>Cargando etapa {currentStage + 1}</Text>})
     }
     else{
       //No more stages
-      this.setState({show: <View><Text>Gracias por colaborar</Text><TouchableHighlight style={styles.nextButton} onPress={ () => { this.PersisResults(); } }><Text style={styles.textButton}>Enviar respuesta</Text></TouchableHighlight></View>});
+      this.setState({show: <View><Text>Gracias por colaborar</Text><TouchableHighlight style={styles.nextButton} onPress={ () => { this.PersistResults(1); } }><Text style={styles.textButton}>Enviar respuesta</Text></TouchableHighlight></View>});
     }
   }
 
@@ -110,10 +114,67 @@ export default class StageManager extends React.Component {
     AsyncStorage.setItem("test-" + testID, value);
   }
 
-  PersisResults()
+  PersistResults(state)
   {
     this.SaveAsyncStorage(this.state.testID);
-    this.props.navigation.navigate('Main');
+    //Before send result, destroy "completed" property from screen and stage object.
+    result = new Object();
+    result.test_id = this.state.testID;
+    result.user_id = JSON.parse(this.state.user).id;
+    result.state = state;
+    stages = this.state.stages;
+    stages.map((stage, i) => {
+      delete stage.completed;
+      stage.screens.map((screen,j) =>{
+        delete screen.completed;
+      });
+    });
+    if (state == 1){//If completed
+      result.data = JSON.stringify(stages);
+    }
+    this.FetchResult(result);
+  }
+
+  async FetchResult(result)
+  {
+    var msg = 'Se ha producido un error al sincronizar la información.';
+    var description = 'Por favor, ingrese al test mas tarde para reintentar la operación. Presione continuar para volver a la pantalla principal';
+
+    try {
+      let response = await fetch(RailsApi('result'), {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            result: result
+          }),
+        });
+
+      let res = await response.text();
+      if (response.status >= 200 && response.status < 300) {
+          //if ok
+          msg = 'La información fue enviada correctamente.';
+          description ='Muchas gracias por colaborar. Presione continuar para volver a la pantalla principal';
+      } else {
+          let error = res;
+          throw error;
+      }
+    } catch(error) {
+        console.log(error);
+    }
+
+    Alert.alert(
+      msg,
+      description,
+      [
+        {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main', {user: this.state.user})},
+
+      ],
+      { cancelable: false }
+    )
+
   }
 
   render(){

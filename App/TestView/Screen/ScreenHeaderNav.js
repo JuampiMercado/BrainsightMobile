@@ -45,9 +45,8 @@ class ScreenLeftNav extends React.Component{
 
   }
   cancelTest(){
-    debugger;
     AsyncStorage.removeItem('test-' + this.props.navigation.state.params.testID);
-    this.props.navigation.navigate('Main');
+    this.props.navigation.state.params.PersistResults(0);
   }
   render(){
     return(

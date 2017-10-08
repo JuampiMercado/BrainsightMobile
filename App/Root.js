@@ -26,6 +26,7 @@ export default class HomeScreen extends React.Component {
 
 
   async getUser() {
+    debugger;
     try {
       var user =await AsyncStorage.getItem('user');
       if (user && user != null && user != undefined){

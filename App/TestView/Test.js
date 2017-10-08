@@ -24,7 +24,6 @@ export default class Test extends React.Component {
 
   async GetTest(){
      //Search test on AsyncStorage
-     debugger;
     var test = this.state.test;
     try {
       let storTest = await AsyncStorage.getItem('test-' + this.state.test.id);
@@ -51,7 +50,7 @@ export default class Test extends React.Component {
     return(
       <View style={styles.container}>
         <TouchableHighlight style={styles.testButton}
-          onPress={ () => { navigate('StageManager',{ testID: this.state.test.id, stages: this.state.test.data, currentStage: 0}) } }
+          onPress={ () => { navigate('StageManager',{ user: this.state.user, testID: this.state.test.id, stages: this.state.test.data, currentStage: 0}) } }
           >
           <Text style={styles.textButton}>¡Empezar! </Text>
         </TouchableHighlight>

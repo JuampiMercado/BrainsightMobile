@@ -10,6 +10,7 @@ export default class ScreenManager extends React.Component {
     super(props);
     var params = this.props.navigation.state.params;
     this.state = {
+      user: params.user,
       testID: params.testID,
       screens: params.screens,
       currentScreen: params.currentScreen,
@@ -50,6 +51,7 @@ export default class ScreenManager extends React.Component {
       //Si es la ultima pantalla, mando al StageManager
       this.props.navigation.navigate('StageManager',
         {
+          user: this.state.user,
           testID: this.state.testID,
           stages: this.state.stages,
           currentStage: this.state.currentStage + 1
@@ -60,6 +62,7 @@ export default class ScreenManager extends React.Component {
     {
       this.props.navigation.navigate('ScreenManager',
         {
+          user: this.state.user,
           testID: this.state.testID,
           screens: this.state.screens,
           currentScreen: this.state.currentScreen + 1,
@@ -68,7 +71,8 @@ export default class ScreenManager extends React.Component {
           lastStage: this.state.lastStage,
           SaveState: this.props.navigation.state.params.SaveState,
           SaveAsyncStorage: this.props.navigation.state.params.SaveAsyncStorage,
-          SetCompleteElement: this.props.navigation.state.params.SetCompleteElement
+          SetCompleteElement: this.props.navigation.state.params.SetCompleteElement,
+          PersistResults: this.props.navigation.state.params.PersistResults
         }
       );
     }

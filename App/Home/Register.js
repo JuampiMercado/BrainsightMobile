@@ -55,7 +55,7 @@ class Register extends React.Component {
           let user = res;
           //On success we will store the access_token in the AsyncStorage
           this.SaveUser(user);
-          this.props.navigation.navigate("Main")
+          this.props.navigation.navigate("Main",{user: user})
       } else {
           //Handle error
           let error = res;

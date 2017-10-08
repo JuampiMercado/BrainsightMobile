@@ -39,15 +39,32 @@ export default class Main extends React.Component {
     return false;
   }
 
+  async getUser(){
+    try {
+      let user = await AsyncStorage.getItem('user');
+      if (!user) {
+        console.log("Token not set");
+      } else {
+        if (user != null && user != undefined){
+          return user;
+        }
+      }
+    } catch (error) {
+      console.log("Something went wrong");
+    }
+    return '';
+  }
+
   componentWillMount(){
     var user = '';
+    debugger;
     try
     {
       user = this.props.navigation.state.params.user;
     }
     catch(er)
     {
-      user = AsyncStorage.getItem('user');
+      user = this.getUser();
     }
     if(user)
     {
