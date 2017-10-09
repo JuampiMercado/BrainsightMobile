@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text,TouchableHighlight,StyleSheet, AsyncStorage } from 'react-native';
+import { View, Text,TouchableHighlight,StyleSheet, AsyncStorage,Alert } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import RailsApi from '../Config';
 
@@ -22,6 +22,10 @@ export default class Test extends React.Component {
     headerTintColor: '#FFF',
   });
 
+  componentWillMount(){
+    this.FetchResult(3);
+  }
+
   async GetTest(){
      //Search test on AsyncStorage
     var test = this.state.test;
@@ -41,8 +45,54 @@ export default class Test extends React.Component {
     return test;
   }
 
-  componentDidMount(){
 
+
+  async FetchResult(intentos){
+    if (intentos == 0){
+      Alert.alert(
+        'Error',
+        'Se ha producido un error, por favor, intentelo nuevamente mas tarde',
+        [
+          {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main', {user: this.state.user})},
+
+        ],
+        { cancelable: false }
+      )
+      return;
+    }
+    try {
+      let response = await fetch(RailsApi('existResult'), {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: JSON.parse(this.state.user).id
+          }),
+        });
+
+      let res = await response.text();
+      if (response.status >= 200 && response.status < 300) {
+          var exists = JSON.parse(res);
+          if(exists){
+            Alert.alert(
+              'Error',
+              'Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
+              [
+                {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main', {user: this.state.user})},
+
+              ],
+              { cancelable: false }
+            )
+          }
+      } else {
+          let error = res;
+          throw error;
+      }
+    } catch(error) {
+        this.FetchResult(intentos-1);
+    }
   }
 
   render(){
