@@ -297,7 +297,7 @@ var screen6 = { type: 'screen', elements: [ element8], config: null};
 var stage1 = { type: 'stage', screens: [screen1,screen2], config: null };
 var stage2 = { type: 'stage', screens: [screen3,screen4], config: null };
 var stage3 = { type: 'stage', screens: [screen5, screen6], config:null }
-var prueba = { id: 2, data: [stage1, stage2,stage3] };
+var prueba = { id: 2, name: 'Test Juampi Publicado', data: [stage1, stage2,stage3] };
 
 
 

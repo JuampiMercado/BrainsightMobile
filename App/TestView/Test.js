@@ -16,7 +16,7 @@ export default class Test extends React.Component {
   }
 
   static navigationOptions = ({ navigation }) => ({
-    title: '',
+    title: navigation.state.params.test.name,
     headerStyle: styles.mainHeader,
     headerTintColor: '#FFF',
   });
