@@ -4,7 +4,6 @@ import { StackNavigator } from 'react-navigation';
 import RailsApi from '../Config';
 
 
-
 export default class Test extends React.Component {
 
   constructor(props){
@@ -13,7 +12,7 @@ export default class Test extends React.Component {
       test: this.props.navigation.state.params.test,
       user: this.props.navigation.state.params.user
     }
-    this.GetTest();
+
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -23,7 +22,9 @@ export default class Test extends React.Component {
   });
 
   componentWillMount(){
-    this.FetchResult(3);
+    this.GetTest();
+    this.FetchResult();
+
   }
 
   async GetTest(){
@@ -47,19 +48,7 @@ export default class Test extends React.Component {
 
 
 
-  async FetchResult(intentos){
-    if (intentos == 0){
-      Alert.alert(
-        'Error',
-        'Se ha producido un error, por favor, intentelo nuevamente mas tarde',
-        [
-          {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main', {user: this.state.user})},
-
-        ],
-        { cancelable: false }
-      )
-      return;
-    }
+  async FetchResult(){
     try {
       let response = await fetch(RailsApi('existResult'), {
         method: 'post',
@@ -68,7 +57,7 @@ export default class Test extends React.Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            user_id: JSON.parse(this.state.user).id
+            user_id: this.state.user.id
           }),
         });
 
@@ -80,7 +69,7 @@ export default class Test extends React.Component {
               'Error',
               'Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
               [
-                {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main', {user: this.state.user})},
+                {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main',{linkID: false})},
 
               ],
               { cancelable: false }
@@ -91,7 +80,16 @@ export default class Test extends React.Component {
           throw error;
       }
     } catch(error) {
-        this.FetchResult(intentos-1);
+        Alert.alert(
+        'Error',
+        'Se ha producido un error, por favor, intentelo nuevamente mas tarde',
+        [
+          {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main',{linkID: false})},
+
+        ],
+        { cancelable: false }
+      )
+      console.log(error);
     }
   }
 

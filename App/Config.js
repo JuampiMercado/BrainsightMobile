@@ -12,6 +12,7 @@ const RailsApi = (method) => {
   return apiweb + method;
 }
 
+
 export default RailsApi;
 
 

@@ -1,16 +1,8 @@
 import React from 'react';
-import { View, AppRegistry, AsyncStorage } from 'react-native';
-import { StackNavigator } from 'react-navigation';
-
-import Register from './Home/Register'
-import Login from './Home/Login'
-import Main from './Main/Main'
-import Profile from './Profile/Profile'
-import Test from './TestView/Test'
-import ScreenManager from './TestView/Screen/ScreenManager'
-import StageManager from './TestView/Stage/StageManager'
-import VideoPlayerView from './TestView/Elements/VideoPlayerView'
+import { View, AsyncStorage,Platform,Linking } from 'react-native';
+import { StackNavigator  } from 'react-navigation';
 import Orientation from 'react-native-orientation';
+import Login from './Home/Login'
 
 
 export default class HomeScreen extends React.Component {
@@ -18,19 +10,20 @@ export default class HomeScreen extends React.Component {
     super(props);
   }
 
-
-  componentDidMount() {
-    Orientation.lockToPortrait()
+  componentDidMount() { // B
     this.getUser();
+  }
+
+  componentWillMount(){
+    Orientation.lockToPortrait();
   }
 
 
   async getUser() {
-    debugger;
     try {
       var user =await AsyncStorage.getItem('user');
       if (user && user != null && user != undefined){
-        this.props.navigation.navigate('Main', {user: user} );
+        this.props.navigation.navigate('Main');
       }
     } catch (error) {
       console.log("Something went wrong");
@@ -48,15 +41,3 @@ export default class HomeScreen extends React.Component {
   }
 }
 
-export const Brainsight = StackNavigator({
-  Home: { screen: HomeScreen },
-  Register: { screen: Register },
-  Main: { screen: Main, navigation: HomeScreen.navigate },
-  Profile: { screen: Profile },
-  Test: { screen: Test },
-  StageManager: { screen: StageManager},
-  ScreenManager: { screen: ScreenManager},
-  VideoPlayerView: { screen: VideoPlayerView}
-});
-
-AppRegistry.registerComponent('Brainsight', () => Brainsight);

@@ -18,7 +18,6 @@ export default class LoginForm extends React.Component{
   }
 
   async SaveUser(responseData){
-    debugger;
     await AsyncStorage.setItem('user', responseData, (err)=> {
       if(err){
         throw err;
@@ -27,7 +26,8 @@ export default class LoginForm extends React.Component{
         console.log("error is: " + err);
     });
   }
-  //Fin storeToken
+
+
   async onLoginPressed() {
     Keyboard.dismiss();
     this.setState({showProgress: true})
@@ -49,7 +49,7 @@ export default class LoginForm extends React.Component{
           let user = res;
           //On success we will store the access_token in the AsyncStorage
           this.SaveUser(user);
-          this.props.navigation.navigate("Main",{user: user})
+          this.props.navigation.navigate("Main")
       } else {
           //Handle error
           let error = res;
@@ -60,7 +60,7 @@ export default class LoginForm extends React.Component{
         this.setState({showProgress: false});
     }
   }
-  //fin onLoginPressed
+
 
   onRegisterClick() {
     Keyboard.dismiss();

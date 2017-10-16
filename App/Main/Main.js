@@ -1,22 +1,25 @@
 import React, {Component} from 'react';
-import { Text,View,StyleSheet,TouchableHighlight,AsyncStorage } from 'react-native';
+import { Text,View,StyleSheet,TouchableHighlight,AsyncStorage,Alert } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import MainHeader from './MainHeaderNav'
 import RailsApi from '../Config';
 import PTRView from 'react-native-pull-to-refresh';
 import BackHandlerAndroid from '../Handlers/BackHandlerAndroid'
+import DeepLinking from '../DeepLinking'
 
 
 export default class Main extends React.Component {
   constructor(props){
     super(props);
-
+    var linkID = true;
+    try {linkID = this.props.navigation.state.params.linkID;}
+    catch(err){}
     this.state = {
       testsList: [],
-      user: "",
+      user: null,
       error: "",
       refreshing: false,
-
+      linkID: linkID
     }
     this.goToTest = this.goToTest.bind(this);
   }
@@ -39,66 +42,49 @@ export default class Main extends React.Component {
     return false;
   }
 
-  async getUser(){
-    try {
-      let user = await AsyncStorage.getItem('user');
-      if (!user) {
-        console.log("Token not set");
-      } else {
-        if (user != null && user != undefined){
-          return user;
-        }
-      }
-    } catch (error) {
-      console.log("Something went wrong");
-    }
-    return '';
-  }
-
   componentWillMount(){
-    var user = '';
-    debugger;
-    try
-    {
-      user = this.props.navigation.state.params.user;
-    }
-    catch(er)
-    {
-      user = this.getUser();
-    }
-    if(user)
-    {
-      this.setState({user: user});
-    }
-    else{
-      this.props.navigation.navigate('Home');
-    }
-    this.GetTests(3);
+    var user = this.getUser();
+    this.GetTests(3,user.id);
+
   }
 
   _refresh= () => {
     return new Promise((resolve) => {
       this.setState({testsList: [], error: ""});
-      this.GetTests(3);
+      this.GetTests(3, this.state.user.id);
       setTimeout(()=>{resolve()}, 2000)
     });
   }
 
+  async getUser(){
+    try {
+      let user = await AsyncStorage.getItem('user');
+      if (user != null && user != undefined && user != null){
+          this.setState({user: JSON.parse(user) }) ;
+          return JSON.parse(user);
+      }
+      else {
+        this.props.navigation.navigate('Home');
+      }
+    } catch (error) {
+      this.props.navigation.navigate('Home');
+    }
+  }
 
-  async GetTests(intentos) {
+  async GetTests(intentos,userid) {
     if (intentos == 0){
       this.setState({error: 'No se han podido descargar test. Por favor, intentelo de nuevo más tarde.'})
       return;
     }
     try {
-      let response = await fetch(RailsApi('test'), {
+      let response = await fetch(RailsApi('tests'), {
         method: 'post',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            id: this.state.user.id
+            id: userid
           }),
         });
 
@@ -110,26 +96,80 @@ export default class Main extends React.Component {
           throw error;
       }
     } catch(error) {
-        this.GetTests(intentos-1);
+        this.GetTests(intentos-1,userid);
     }
   }
 
   goToTest(test){
     //Add completed property to stages and screens before execute test.
-    test = JSON.parse(test);
-    test.data.map((stage, i) => {
-      stage.completed = false;
-      stage.screens.map((screen,j) =>{
-        screen.completed = false;
+    test = this.setCompletedProperty(test);
+    if(test){
+      //AsyncStorage.removeItem('test-2');
+      this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
+    }
+  }
+
+  async linkToTest(id){
+    //This function is calling by the component DeepLinking
+    //I must manage redirection with linkID because it's entering on loop
+    if(this.state.linkID){
+      var test = await this.fetchLinkingTest(id);
+      console.log('test:' + test);
+      if(test && test != undefined){
+        //test.data = [stage1, stage2,stage3];
+        this.goToTest(test);
+      }
+    }
+  }
+
+  setCompletedProperty(test){
+    if(test.data){
+      test.data.map((stage, i) => {
+        stage.completed = false;
+        stage.screens.map((screen,j) =>{
+          screen.completed = false;
+        });
       });
-    });
-    this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
+      return test;
+    }
+    else{
+      Alert.alert('Error en el test','El test tiene un error y no puede iniciarse.')
+      return null;
+    }
+  }
+
+  async fetchLinkingTest(id){
+    console.log('Test ID: ' + id);
+    try {
+      let response = await fetch(RailsApi('test'), {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            id: id
+          }),
+        });
+
+      let res = await response.text();
+      if (response.status >= 200 && response.status < 300) {
+          return JSON.parse(res);
+      } else {
+          let error = res;
+          Alert.alert(error,'El test puede que no este disponible en este momento.');
+          return null;
+      }
+    } catch(error) {
+        console.log(error);
+    }
+
   }
 
   render(){
-    //const { navigate } = this.props.navigation;
     return(
         <PTRView onRefresh={this._refresh} >
+          <DeepLinking linkToTest={this.linkToTest.bind(this)} />
           <BackHandlerAndroid />
           <View style={styles.titleContainer}>
               <Text style={styles.title}>Seleccione un test</Text>
@@ -257,7 +297,7 @@ var screen6 = { type: 'screen', elements: [ element8], config: null};
 var stage1 = { type: 'stage', screens: [screen1,screen2], config: null };
 var stage2 = { type: 'stage', screens: [screen3,screen4], config: null };
 var stage3 = { type: 'stage', screens: [screen5, screen6], config:null }
-var prueba = JSON.stringify({ id: 2, data: [stage1, stage2,stage3] });
+var prueba = { id: 2, data: [stage1, stage2,stage3] };
 
 
 

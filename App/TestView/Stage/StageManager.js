@@ -120,7 +120,7 @@ export default class StageManager extends React.Component {
     //Before send result, destroy "completed" property from screen and stage object.
     result = new Object();
     result.test_id = this.state.testID;
-    result.user_id = JSON.parse(this.state.user).id;
+    result.user_id = this.state.user.id;
     result.state = state;
     stages = this.state.stages;
     stages.map((stage, i) => {
@@ -132,6 +132,7 @@ export default class StageManager extends React.Component {
     if (state == 1){//If completed
       result.data = JSON.stringify(stages);
     }
+    console.log(result.test_id + ' '+ result.user_id);
     this.FetchResult(result);
   }
 
@@ -169,7 +170,7 @@ export default class StageManager extends React.Component {
       msg,
       description,
       [
-        {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main', {user: this.state.user})},
+        {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main', {user: this.state.user, linkID: false})},
 
       ],
       { cancelable: false }

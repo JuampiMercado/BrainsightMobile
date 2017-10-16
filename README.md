@@ -16,3 +16,6 @@
 #npm i react-native-elements --save
 #npm install --save round-to
 #npm i babel-plugin-transform-remove-console --save
+#Linking
+adb shell am start -W -a android.intent.action.VIEW -d "https://brainsight-web.herokuapp.com/test/2" com.brainsight
+
