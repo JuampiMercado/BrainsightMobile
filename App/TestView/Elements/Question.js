@@ -7,36 +7,32 @@ export default class Question extends React.Component {
 
   constructor(props){
     super(props);
-    this.state = {
-      id: this.props.id,
-      question: this.props.question,
-      result: this.props.result,
-      type: this.props.type,
-      options: this.props.options,
-    }
   }
 
+
   shouldComponentUpdate(nextProps, nextState) {
-    if (this.state.question !== nextState.question) {
+    if (this.props.question !== nextState.question) {
       return true;
     }
-    if (this.state.id !== nextState.id) {
+    if (this.props.id !== nextState.id) {
       return true;
     }
     return false;
   }
 
-  SaveState(value)
+  _SaveState(value)
   {
     var element = this.props.id;
-    this.props.SaveState(element,value);
+    this.props._SaveState(element,value);
   }
+
+
 
   render(){
     return (
         <View>
-          <Text key={'Text-' + this.state.id}>{this.state.question}</Text>
-           <Answer {...this.state} SaveState={this.SaveState.bind(this)} />
+          <Text key={'Text-' + this.props.id}>{this.props.question}</Text>
+           <Answer {...this.props} SaveState={this._SaveState.bind(this)}  />
         </View>
     );
   }
@@ -45,31 +41,24 @@ export default class Question extends React.Component {
 class Answer extends React.Component{
   constructor(props){
     super(props);
-    this.state = {
-      id: this.props.id,
-      result: this.props.result,
-      type: this.props.type,
-      options: this.props.options,
-      SaveState: this.props.SaveState
-    }
   }
-  /*
-    type: open, tof(true or false), mc(multiple choice), likert
-  */
   render(){
     var response = '';
-    switch(this.state.type){
+    switch(this.props.answer.type){
       case 'open':
-        response = (<OpenAnswer {...this.state} />);
+        response = (<OpenAnswer {...this.props} />);
         break;
-      case 'tof':
-        response = (<TrueOrFalse {...this.state} />);
+      case 'polar':
+        response = (<TrueOrFalse {...this.props} />);
         break;
-      case 'mc':
-        response = (<MultipleChoice {...this.state} />);
+      case 'multiple':
+        response = (<MultipleChoice {...this.props} />);
         break;
       case 'likert':
-        response = (<Likert {...this.state} />);
+        response = (<Likert {...this.props} />);
+        break;
+      default:
+        respose = (<Text></Text>);
         break;
     }
 
@@ -78,19 +67,15 @@ class Answer extends React.Component{
   }
 };
 
-
+//answer Object {bottomLabel: 'Insuficiente',choices: [], correctAnswer: null, hasCorrectAnswer: false, noLabel: 'No', steps: 5,
+//topLabel: 'Excelente', type: 'polar', value:'Esta es una respuesta abierta', yesLabel:'Si'}
 
 class OpenAnswer extends React.Component{
   constructor(props){
     super(props);
-    this.state = {
-      id: this.props.id,
-      result: this.props.result
-    }
   }
   render(){
-    return <TextInput onChangeText={(value) => {this.props.SaveState(value)}} key={'TextInput-' + this.state.id} >{this.state.result}</TextInput>
-    //return <TextInput onChangeText={(value) => {this.props.SaveState(value)}} key={'TextInput-' + this.state.id} ></TextInput>
+    return <TextInput onChangeText={(value) => {this.props.SaveState(value)}} key={'TextInput-' + this.props.id} >{this.props.answer.value}</TextInput>
   }
 }
 
@@ -99,9 +84,10 @@ class TrueOrFalse extends React.Component{
     super(props);
     this.state = {
       id: this.props.id,
-      result: this.props.result,
-      options: [{label: 'Falso', value: false }, {label: 'Verdadero', value: true }],
-      initial: ((this.props.result != null && this.props.result != undefined) ? (this.props.result? 1 : 0) : false)
+      answer: this.props.answer,//Object
+      question:  this.props.answer.question,//string
+      options: [{label: this.props.answer.noLabel , value: false }, {label: this.props.answer.yesLabel , value: true }],
+      initial: ((this.props.answer.value != null && this.props.answer.value != undefined) ? (this.props.answer.value? 1 : 0) : false)
     }
   }
   render(){
@@ -113,7 +99,6 @@ class TrueOrFalse extends React.Component{
             radio_props={ this.state.options}
             initial={this.state.initial}
             onPress={(value) => {
-              this.setState({value:value});
               this.props.SaveState(value);
             }}
             borderWidth={1}
@@ -134,22 +119,25 @@ class MultipleChoice extends React.Component{
     super(props);
     this.state = {
       id: this.props.id,
-      result: this.props.result,
-      options: this.props.options,
+      answer: this.props.answer,//Object
+      question:  this.props.answer.question,//string
+      result: (this.props.answer.value.indexOf("Esta es una respuesta abierta") != -1 ? "" : this.props.answer.value),
+      options: this.props.answer.choices,
     }
     this.ConcatAnswers = this.ConcatAnswers.bind(this);
+
   }
 
   ConcatAnswers(element,option,checked){
     var str = (this.state.result == undefined ? '': this.state.result);
     if(checked){
       //if is already inserted, don't insert again
-      if( str.split('|').indexOf(option) == -1){
-        str = str + option + '|';
+      if( str.split('|').indexOf(option.label) == -1){
+        str = str + option.label + '|';
       }
     }
     else{
-      str = String(str).replace(option + '|','');
+      str = String(str).replace(option.label + '|','');
     }
     this.setState({result: str});
     this.props.SaveState(str);
@@ -163,7 +151,7 @@ class MultipleChoice extends React.Component{
                 var array = (this.state.result != undefined && this.state.result != null)? this.state.result.split('|') : [];
                 return(
                   <View style={styles.checkOptions} key={'CheckBox-' + i}>
-                    <Check id={i} option={element} ConcatAnswers={this.ConcatAnswers} checked={(array.indexOf(element) != -1)}  />
+                    <Check id={i} option={element} ConcatAnswers={this.ConcatAnswers} checked={(array.indexOf(element.label) != -1)}  />
                   </View>
                 );
               })
@@ -188,7 +176,7 @@ class Check extends React.Component{
       <CheckBox
           key={this.state.id}
           left
-          title={<Text style={styles.checkText}>{this.state.option}</Text>}
+          title={<Text style={styles.checkText}>{this.state.option.label}</Text>}
           checkedIcon='dot-circle-o'
           uncheckedIcon='circle-o'
           checked={this.state.checked}
@@ -213,9 +201,9 @@ class Likert extends React.Component{
     super(props);
     this.state = {
       id: this.props.id,
-      result: this.props.result,
+      result: this.props.answer.value,
       options: this.props.options,
-      value: ((this.props.result == null || this.props.result == undefined|| this.props.result == '') ? 0 : this.props.result)
+      value: ((this.props.answer.value == null || this.props.answer.value == undefined|| this.props.answer.value == '' || isNaN(this.props.answer.value)) ? 0 : this.props.answer.value)
     }
   }
 
@@ -226,9 +214,9 @@ class Likert extends React.Component{
           <Slider
             thumbTintColor='#F79B08'
             value={this.state.value}
-            minimumValue={this.state.options[0]}
-            maximumValue={this.state.options[1]}
-            step={this.state.options[2]}
+            minimumValue={0}//{this.state.options[0]}
+            maximumValue={this.props.answer.steps}
+            step={1}
             onValueChange={
               (value) =>
               {

@@ -57,7 +57,8 @@ export default class Test extends React.Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            user_id: this.state.user.id
+            user_id: this.state.user.id,
+            test_id: this.state.test.id
           }),
         });
 

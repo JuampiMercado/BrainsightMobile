@@ -102,10 +102,19 @@ export default class Main extends React.Component {
 
   goToTest(test){
     //Add completed property to stages and screens before execute test.
+    console.log(test);
+    console.log(prueba);
     test = this.setCompletedProperty(test);
     if(test){
       //AsyncStorage.removeItem('test-2');
       this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
+    }
+  }
+
+  async getListTest(id){
+    var test = await this.fetchLinkingTest(id);
+    if(test && test != undefined){
+      this.goToTest(test);
     }
   }
 
@@ -121,6 +130,8 @@ export default class Main extends React.Component {
       }
     }
   }
+
+
 
   setCompletedProperty(test){
     if(test.data){
@@ -182,7 +193,7 @@ export default class Main extends React.Component {
               return(
                 <View style={styles.testContainer} key={test.id}>
                   <TouchableHighlight style={styles.testButton}
-                    onPress={ () => { this.goToTest(prueba) } }
+                    onPress={ () => { this.getListTest(test.id) } }
                     >
                     <Text style={styles.textButton}>{test.name} </Text>
                   </TouchableHighlight>
@@ -271,33 +282,39 @@ element.config = { source: null };
 var element1 = new Object();
 element1.type ='question';
 element1.config = { question: '¿Argentina esta clasificada para el mundial?', result: '', type: 'tof', options: [] };
+element1.sensors = { reaction: null, accelerometer: null, gyroscope: null, magnetometer: null, thermometer: null, lightSensor: null }
 var element2 = new Object();
 element2.type ='question';
 element2.config = { question: '¿Argentina le gana a Perú?', result: '', type: 'mc', options: ['Si','No','Resuciten a Don Julio'] };
+element2.sensors = { reaction: null, accelerometer: null, gyroscope: null, magnetometer: null, thermometer: null, lightSensor: null }
 var element3 = new Object();
 element3.type ='question';
 element3.config = { question: '¿Que tanto te gusta como juega la selección?', result: '', type: 'likert', options: [0,10,0.1] };
+element3.sensors = { reaction: null, accelerometer: null, gyroscope: null, magnetometer: null, thermometer: null, lightSensor: null }
 var element4 = new Object();
 element4.type ='question';
 element4.config = { question: '¿Esta es la cuarta pregunta?', result: '', type: 'open', options: [] };
+element4.sensors = { reaction: null, accelerometer: null, gyroscope: null, magnetometer: null, thermometer: null, lightSensor: null }
 var element5 = new Object();
 element5.type ='question';
 element5.config = { question: '¿Esta es la quinta pregunta?', result: '', type: 'open', options: [] };
+element5.sensors = { reaction: null, accelerometer: null, gyroscope: null, magnetometer: null, thermometer: null, lightSensor: null }
 var element6 = new Object();
 element6.type ='text';
 element6.config = { text: '¡Esto es un texto carajo!', color: 'red', size: 25 };
 var element7 = { type: 'image', config: { source: 'https://i2.wp.com/hipertextual.com/files/2015/10/conectoma-cerebro.jpg?resize=670%2C413&ssl=1' }};
 var element8 = { type: 'video', config: { source: 'https://vjs.zencdn.net/v/oceans.mp4' }};
-var screen1 = { type: 'screen', elements: [element1,element2,element3], config: null };
+var screen1 = { type: 'screen', elements: [element1], config: null };
+var screen7 = { type: 'screen', elements: [element2], config: null };
 var screen2 = { type: 'screen', elements: [element3], config: null };
 var screen3 = { type: 'screen', elements: [element4], config: null };
 var screen4 = { type: 'screen', elements: [element5,element6], config: null };
 var screen5 = { type: 'screen', elements: [ element7], config: null};
 var screen6 = { type: 'screen', elements: [ element8], config: null};
-var stage1 = { type: 'stage', screens: [screen1,screen2], config: null };
+var stage1 = { type: 'stage', screens: [screen1,screen7,screen2], config: null };
 var stage2 = { type: 'stage', screens: [screen3,screen4], config: null };
 var stage3 = { type: 'stage', screens: [screen5, screen6], config:null }
-var prueba = { id: 2, name: 'Test Juampi Publicado', data: [stage1, stage2,stage3] };
+var prueba = { id: 2, name: 'Object Prueba', data: [stage1, stage2,stage3] };
 
 
 

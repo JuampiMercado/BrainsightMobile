@@ -20,6 +20,13 @@ export default class StageManager extends React.Component {
     }
   }
 
+  static navigationOptions = ({ navigation }) => ({
+    title: '',
+    headerLeft: null,
+    headerStyle: styles.mainHeader,
+    headerTintColor: '#FFF',
+  });
+
   shouldComponentUpdate(nextProps, nextState) {
     if (this.state.show !== nextState.show) {
       return true;
@@ -30,26 +37,10 @@ export default class StageManager extends React.Component {
     return false;
   }
 
-  static navigationOptions = ({ navigation }) => ({
-    title: '',
-    headerLeft: null,
-    headerStyle: styles.mainHeader,
-    headerTintColor: '#FFF',
-  });
-
-  getIndex(value, arr, prop) {
-    for(var i = 0; i < arr.length; i++) {
-        if(arr[i][prop] === value) {
-            return i;
-        }
-    }
-    return -1; //to handle the case where the value doesn't exist
-  }
-
   componentWillMount(){
     /*Checking if are stages complete*/
     var currentStage = this.state.currentStage;
-    var stageIndex = this.getIndex(false, this.state.stages, 'completed' )
+    var stageIndex = this._getIndex(false, this.state.stages, 'completed' )
     //if stageIndex is -1, all stages are complete. So, stageIndex is lastStage + 1
     if(stageIndex == -1) stageIndex = this.state.lastStage + 1;
     if (stageIndex > currentStage)
@@ -64,7 +55,7 @@ export default class StageManager extends React.Component {
 
       /*Checking if are screens complete*/
       var currentScreen = 0;
-      var screenIndex = this.getIndex(false, this.state.stages[currentStage].screens, 'completed' )
+      var screenIndex = this._getIndex(false, this.state.stages[currentStage].screens, 'completed' )
       if (this.state.currentScreen != 0) currentScreen = screenIndex;
       /*End of checking*/
 
@@ -77,66 +68,31 @@ export default class StageManager extends React.Component {
           stages: this.state.stages,
           currentStage: currentStage,
           lastStage: this.state.lastStage,
-          SaveState: this.SaveState.bind(this),
-          SaveAsyncStorage: this.SaveAsyncStorage.bind(this),
-          SetCompleteElement: this.SetCompleteElement.bind(this),
-          PersistResults: this.PersistResults.bind(this)
+          SaveState: this._SaveState.bind(this),
+          SaveAsyncStorage: this._SaveAsyncStorage.bind(this),
+          SetCompleteElement: this._SetCompleteElement.bind(this),
+          PersistResults: this._PersistResults.bind(this),
+          setSensorValue: this._setSensorValue.bind(this)
         }
       );
       this.setState({show: <Text>Cargando etapa {currentStage + 1}</Text>})
     }
     else{
       //No more stages
-      this.setState({show: <View><Text>Gracias por colaborar</Text><TouchableHighlight style={styles.nextButton} onPress={ () => { this.PersistResults(1); } }><Text style={styles.textButton}>Enviar respuesta</Text></TouchableHighlight></View>});
+      this.setState({show: <View><Text>Gracias por colaborar</Text><TouchableHighlight style={styles.nextButton} onPress={ () => { this._PersistResults(1); } }><Text style={styles.textButton}>Enviar respuesta</Text></TouchableHighlight></View>});
     }
   }
 
-  SaveState(screen,element,value){
-    var stages = this.state.stages;
-    stages[this.state.currentStage].screens[screen].elements[element].config.result = value;
-    this.setState({stages: stages});
-  }
-
-  SetCompleteElement(iStage,iScreen){
-    var stages=this.state.stages;
-    if(iScreen == undefined || iScreen == null)
-    {
-      stages[iStage].completed = true;
+  _getIndex(value, arr, prop) {
+    for(var i = 0; i < arr.length; i++) {
+        if(arr[i][prop] === value) {
+            return i;
+        }
     }
-    else{
-      stages[iStage].screens[iScreen].completed = true;
-    }
-    this.setState({stages: stages})
+    return -1; //to handle the case where the value doesn't exist
   }
 
-  SaveAsyncStorage(testID){
-    var value = JSON.stringify(this.state.stages);
-    AsyncStorage.setItem("test-" + testID, value);
-  }
-
-  PersistResults(state)
-  {
-    this.SaveAsyncStorage(this.state.testID);
-    //Before send result, destroy "completed" property from screen and stage object.
-    result = new Object();
-    result.test_id = this.state.testID;
-    result.user_id = this.state.user.id;
-    result.state = state;
-    stages = this.state.stages;
-    stages.map((stage, i) => {
-      delete stage.completed;
-      stage.screens.map((screen,j) =>{
-        delete screen.completed;
-      });
-    });
-    if (state == 1){//If completed
-      result.data = JSON.stringify(stages);
-    }
-    console.log(result.test_id + ' '+ result.user_id);
-    this.FetchResult(result);
-  }
-
-  async FetchResult(result)
+  async _FetchResult(result)
   {
     var msg = 'Se ha producido un error al sincronizar la información.';
     var description = 'Por favor, ingrese al test mas tarde para reintentar la operación. Presione continuar para volver a la pantalla principal';
@@ -176,6 +132,61 @@ export default class StageManager extends React.Component {
       { cancelable: false }
     )
 
+  }
+
+  _setSensorValue(screen,sensors){
+    var stages = this.state.stages;
+    for(var i = 0,len = stages[this.state.currentStage].screens[screen].elements.length; i < len; i++ ){
+      stages[this.state.currentStage].screens[screen].elements[i].sensors = sensors;
+    }
+    console.log(stages);
+    this.setState({stages: stages});
+  }
+
+  _SaveState(screen,element,value){
+    var stages = this.state.stages;
+    stages[this.state.currentStage].screens[screen].elements[element].config.answer.value = value;
+    this.setState({stages: stages});
+  }
+
+  _SetCompleteElement(iStage,iScreen){
+    var stages=this.state.stages;
+    if(iScreen == undefined || iScreen == null)
+    {
+      stages[iStage].completed = true;
+    }
+    else{
+      stages[iStage].screens[iScreen].completed = true;
+    }
+    this.setState({stages: stages})
+  }
+
+
+  _SaveAsyncStorage(testID){
+    var value = JSON.stringify(this.state.stages);
+    AsyncStorage.setItem("test-" + testID, value);
+  }
+
+  _PersistResults(state)
+  {
+    this._SaveAsyncStorage(this.state.testID);
+    //Before send result, destroy "completed" property from screen and stage object.
+    result = new Object();
+    result.test_id = this.state.testID;
+    result.user_id = this.state.user.id;
+    result.state = state;
+    stages = this.state.stages;
+    stages.map((stage, i) => {
+      delete stage.completed;
+      stage.screens.map((screen,j) =>{
+        delete screen.completed;
+      });
+    });
+    if (state == 1){//If completed
+      result.data = JSON.stringify(stages);
+    }
+    console.log(result.test_id + ' '+ result.user_id);
+    this._FetchResult(result);
   }
 
   render(){

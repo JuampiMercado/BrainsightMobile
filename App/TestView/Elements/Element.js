@@ -20,13 +20,14 @@ export default class Element extends React.Component {
   render(){
     var element = '';
     switch(this.state.type){
-      case 'text':
+      case 'Title'://Title y Paragraph
+      case 'Paragraph'://Title y Paragraph
         element = (<TestText id={this.state.id} {...this.state.config} />);
         break;
-      case 'question':
-        element = (<Question id={this.state.id} {...this.state.config} SaveState={this.props.SaveState}/>);
+      case 'Question':
+        element = (<Question id={this.state.id} {...this.state.config} _SaveState={this.props._SaveState} />);
         break;
-      case 'image':
+      case 'MediaContent':
         element = (<TestImage id={this.state.id} {...this.state.config} />);
         break;
       case 'video':
@@ -34,6 +35,9 @@ export default class Element extends React.Component {
         break;
       case 'audio':
         element = (<TestAudio id={this.state.id} {...this.state.config} />);
+        break;
+      default:
+        element = (<Text></Text>);
         break;
     }
 

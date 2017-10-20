@@ -19,3 +19,10 @@
 #Linking
 adb shell am start -W -a android.intent.action.VIEW -d "https://brainsight-web.herokuapp.com/test/2" com.brainsight
 
+#Install Sensor Manager
+npm i react-native-sensor-manager --save
+
+See steps of Option:Manually.
+Important! On @Override step do it on MainApplication.java, no on MainActivity
+
+https://www.npmjs.com/package/react-native-sensor-manager
