@@ -24,7 +24,7 @@ export default class Main extends React.Component {
       linkID: linkID
     }
     this.goToTest = this.goToTest.bind(this);
-    //AsyncStorage.multiRemove(AsyncStorage.getAllKeys());
+    //AsyncStorage.multiRemove(['test-11']);
   }
 
   static navigationOptions = ({ navigation }) => ({
