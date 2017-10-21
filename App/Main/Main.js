@@ -192,7 +192,7 @@ export default class Main extends React.Component {
             <Text style={styles.error}>
               {this.state.error}
             </Text>
-            <ScrollView style={{height: height}}>
+            <ScrollView style={{height: height*1.5}}>
             {this.state.testsList.map((test, i) => {
                 return(
                   <View style={styles.testContainer} key={test.id}>

@@ -2,8 +2,9 @@ import React from 'react';
 import {Text,View,TouchableHighlight, StyleSheet, AsyncStorage,Alert } from 'react-native';
 import RailsApi from '../../Config';
 import { StackNavigator } from 'react-navigation';
+//import { PushNotification  } from 'react-native-push-notification';
 
-
+var PushNotification = require('react-native-push-notification');
 export default class StageManager extends React.Component {
 
   constructor(props){
@@ -37,6 +38,55 @@ export default class StageManager extends React.Component {
     return false;
   }
 
+  _isEnableTimeRange(stage){
+    return this.state.stages[stage].config.enableTimeRange;
+  }
+  _betweenTimeRange(stage){
+    var hh = new Date().getHours();
+    var mm = new Date().getMinutes();
+    var currentTime = new Date("01/01/1900 " + hh + ":" + mm);
+    var from = new Date("01/01/1900 " + this.state.stages[stage].config.from);
+    var to = new Date("01/01/1900 " + this.state.stages[stage].config.to);
+    //from = new Date("01/01/1900 05:00");
+    //to=  new Date("01/01/1900 06:00");
+    return from <= currentTime && currentTime <= to;
+  }
+  _pushNotification(stage){
+    var from = this.state.stages[stage].config.from;
+    var to = this.state.stages[stage].config.to;
+    Alert.alert('¡Atención!','Esta estapa debe ser realizada entre las ' + from + ' y '+ to + '. Será redirigido al menú principal.',
+    [
+      {text: 'Continuar', 
+      onPress: () => {
+        this._setNotification(from); 
+        this.props.navigation.navigate('Main', {user: this.state.user, linkID: false});
+    
+      }},
+    ],
+    { cancelable: false }
+    );
+  }
+
+  _setNotification(hour){
+    var currentTime = new Date("01/01/1900 " + new Date().getHours() + ":" + new Date().getMinutes());
+    var notifTime = new Date("01/01/1900 " + hour);
+    var leftTime = notifTime - currentTime;
+    var dateNotification = new Date();
+    if (leftTime > 0){
+      dateNotification = new Date( Date.now() + leftTime );
+    }
+    else {
+      dateNotification = new Date(Date.now() +  ((24 * 60 * 60 * 1000) + leftTime));
+      //If leftTime <= 0, i must set notifications on next day
+      //So, leftTime are the number of milliseconds that passed the test time
+      //24 hours + leftTime, remember leftTime < 0, are the hours i must wait
+    }
+    PushNotification.localNotificationSchedule({
+      message: this.state.test.name + " está listo para continuar la siguiente etapa", // (required)
+      date: dateNotification
+    });
+
+  }
   componentWillMount(){
     /*Checking if are stages complete*/
     var currentStage = this.state.currentStage;
@@ -52,7 +102,9 @@ export default class StageManager extends React.Component {
 
     if( currentStage <= this.state.lastStage ){
       //There are still stages
-
+      if (this._isEnableTimeRange(currentStage) && !this._betweenTimeRange(currentStage)){
+        this._pushNotification(currentStage);
+      }
       /*Checking if are screens complete*/
       var currentScreen = 0;
       var screenIndex = this._getIndex(false, this.state.stages[currentStage].screens, 'completed' )

@@ -3,6 +3,7 @@ package com.brainsight;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.github.yamill.orientation.OrientationPackage;
@@ -11,6 +12,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.sensormanager.SensorManagerPackage; // <------ add package
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,10 +29,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ReactNativePushNotificationPackage(),
             new VectorIconsPackage(),
             new ReactVideoPackage(),
             new OrientationPackage(),
-            new SensorManagerPackage() // <---------- add package
+            new SensorManagerPackage()
       );
     }
   };
