@@ -3,9 +3,9 @@ import {View, TouchableHighlight, Text,TextInput, StyleSheet, AsyncStorage,Devic
 import ScreenHeaderNav from './ScreenHeaderNav'
 import { StackNavigator } from 'react-navigation';
 import Screen from './Screen';
+import { SensorManager } from 'NativeModules';
 
 
-var mSensorManager = require('NativeModules').SensorManager;
 var temperatura = 0;
 var light = 0;
 var proximity = 0;
@@ -100,38 +100,52 @@ export default class ScreenManager extends React.Component {
     }
   }
 
-  async _startSensors(){
-    _handlerLight = await DeviceEventEmitter.addListener('LightSensor', function (data) {
+  _startSensors(){
+    SensorManager.startThermometer(100);
+    SensorManager.startLightSensor(100);
+    SensorManager.startProximity(100);
+    SensorManager.startGyroscope(100);
+    SensorManager.startAccelerometer(100); // To start the accelerometer with a minimum delay of 100ms between events.
+    DeviceEventEmitter.addListener('Accelerometer', function (data) {
+      console.log(data)
+      /**
+      * data.x
+      * data.y
+      * data.z
+      **/
+    });
+    console.log(SensorManager);
+    DeviceEventEmitter.addListener('LightSensor', function (data) {
       light = data.light;
+      console.log(data);
     });
-    _handlerThermo = await DeviceEventEmitter.addListener('Thermometer', function (data) {
+    DeviceEventEmitter.addListener('Thermometer', function (data) {
       console.log(data.temp);
-      temperatura = (temperatura + (data.temp==undefined? temperatura : data.temp)) / 2;
+      //temperatura = (temperatura + (data.temp==undefined? temperatura : data.temp)) / 2;
     });
-    _handlerProxy = await DeviceEventEmitter.addListener('Proximity', function (data) {
+    DeviceEventEmitter.addListener('Proximity', function (data) {
       /**
       * data.isNear: [Boolean] A flag representing whether something is near the screen.
       * data.value: [Number] The raw value returned by the sensor (usually distance in cm).
       * data.maxRange: [Number] The maximum range of the sensor.
       **/
+      console.log(data);
     });
-    _handlerGyroscope = await DeviceEventEmitter.addListener('Gyroscope', function (data) {
+    DeviceEventEmitter.addListener('Gyroscope', function (data) {
       console.log('data.x: ' + data.x);
       console.log('data.y: ' + data.y);
       console.log('data.z: ' + data.z);
     });
 
-    await mSensorManager.startThermometer(100);
-    await mSensorManager.startLightSensor(100);
-    await mSensorManager.startProximity(100);
-    await mSensorManager.startGyroscope(100);
+    
+    
   }
 
   _stopSensors(){
-    mSensorManager.stopThermometer();
-    mSensorManager.stopLightSensor();
-    mSensorManager.stopProximity();
-    mSensorManager.stopGyroscope();
+    SensorManager.stopThermometer();
+    SensorManager.stopLightSensor();
+    SensorManager.stopProximity();
+    SensorManager.stopGyroscope();
   }
   _setSensorValue(){
     var sensors = this.state.sensors;

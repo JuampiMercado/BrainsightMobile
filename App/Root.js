@@ -6,10 +6,7 @@ import Login from './Home/Login'
 
 
 export default class HomeScreen extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   componentDidMount() { // B
     this.getUser();
   }

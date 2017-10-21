@@ -107,6 +107,7 @@ export default class Main extends React.Component {
     //Add completed property to stages and screens before execute test.
     console.log(test);
     console.log(prueba);
+    //test = prueba;
     test = this.setCompletedProperty(test);
     if(test){
       this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
