@@ -12,7 +12,7 @@ export default class StageManager extends React.Component {
     //this.state.test: Array of stages
     this.state = {
       user: params.user,
-      testID: params.testID,
+      test: params.test,
       stages: params.stages,
       currentStage: params.currentStage,
       lastStage: params.stages.length - 1 //Final stage
@@ -62,7 +62,7 @@ export default class StageManager extends React.Component {
       this.props.navigation.navigate('ScreenManager',
         {
           user: this.state.user,
-          testID: this.state.testID,
+          test: this.state.test,
           screens: this.state.stages[currentStage].screens,//[screens]: Array of screens
           currentScreen: currentScreen,
           stages: this.state.stages,
@@ -114,6 +114,8 @@ export default class StageManager extends React.Component {
           //if ok
           msg = 'La información fue enviada correctamente.';
           description ='Muchas gracias por colaborar. Presione continuar para volver a la pantalla principal';
+          var id = 0;
+          AsyncStorage.removeItem('test-' + result.test_id);
       } else {
           let error = res;
           throw error;
@@ -163,16 +165,18 @@ export default class StageManager extends React.Component {
 
 
   _SaveAsyncStorage(testID){
-    var value = JSON.stringify(this.state.stages);
+    var test = this.state.test;
+    test.data = this.state.stages;
+    var value = JSON.stringify(test);
     AsyncStorage.setItem("test-" + testID, value);
   }
 
   _PersistResults(state)
   {
-    this._SaveAsyncStorage(this.state.testID);
+    this._SaveAsyncStorage(this.state.test.id);
     //Before send result, destroy "completed" property from screen and stage object.
     result = new Object();
-    result.test_id = this.state.testID;
+    result.test_id = this.state.test.id;
     result.user_id = this.state.user.id;
     result.state = state;
     stages = this.state.stages;
@@ -185,7 +189,8 @@ export default class StageManager extends React.Component {
     if (state == 1){//If completed
       result.data = JSON.stringify(stages);
     }
-    console.log(result.test_id + ' '+ result.user_id);
+    console.log('Envio resultados');
+    console.log(result);
     this._FetchResult(result);
   }
 

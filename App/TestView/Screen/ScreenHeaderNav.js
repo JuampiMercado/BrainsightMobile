@@ -45,7 +45,7 @@ class ScreenLeftNav extends React.Component{
 
   }
   cancelTest(){
-    AsyncStorage.removeItem('test-' + this.props.navigation.state.params.testID);
+    AsyncStorage.removeItem('test-' + this.props.navigation.state.params.test.id);
     this.props.navigation.state.params.PersistResults(0);
   }
   render(){
@@ -62,7 +62,7 @@ class ScreenLeftNav extends React.Component{
 
 class ScreenRightNav extends React.Component{
   SaveTest(){
-    this.props.navigation.state.params.SaveAsyncStorage(this.props.navigation.state.params.testID)
+    this.props.navigation.state.params.SaveAsyncStorage(this.props.navigation.state.params.test.id)
     this.props.navigation.navigate('Main');
   }
   render(){

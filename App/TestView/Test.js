@@ -36,7 +36,7 @@ export default class Test extends React.Component {
         console.log("Token not set");
       } else {
         if (storTest != null && storTest != undefined){
-          test.data = JSON.parse(storTest);
+          test.data = JSON.parse(storTest).data;
           this.setState({test: test});
         }
       }
@@ -99,7 +99,7 @@ export default class Test extends React.Component {
     return(
       <View style={styles.container}>
         <TouchableHighlight style={styles.testButton}
-          onPress={ () => { navigate('StageManager',{ user: this.state.user, testID: this.state.test.id, stages: this.state.test.data, currentStage: 0}) } }
+          onPress={ () => { navigate('StageManager',{ user: this.state.user, test: this.state.test, stages: this.state.test.data, currentStage: 0}) } }
           >
           <Text style={styles.textButton}>¡Empezar! </Text>
         </TouchableHighlight>

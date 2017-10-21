@@ -12,6 +12,7 @@ import ScreenManager from './TestView/Screen/ScreenManager'
 import StageManager from './TestView/Stage/StageManager'
 import VideoPlayerView from './TestView/Elements/VideoPlayerView'
 import Orientation from 'react-native-orientation';
+import Pending from './Main/Pending'
 
 const Router = StackNavigator({
   Home: { screen: HomeScreen },
@@ -21,7 +22,11 @@ const Router = StackNavigator({
   Test: { screen: Test, path:'test/:id' },
   StageManager: { screen: StageManager},
   ScreenManager: { screen: ScreenManager},
-  VideoPlayerView: { screen: VideoPlayerView}
+  VideoPlayerView: { screen: VideoPlayerView},
+  Pending: {screen: Pending}
 },{initialRouteName: 'Home'});
+
+
+
 
 export default Router;

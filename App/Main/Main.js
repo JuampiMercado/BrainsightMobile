@@ -1,11 +1,13 @@
 import React, {Component} from 'react';
-import { Text,View,StyleSheet,TouchableHighlight,AsyncStorage,Alert } from 'react-native';
+import { Text,View,StyleSheet,TouchableHighlight,AsyncStorage,Alert,ScrollView, Dimensions } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import MainHeader from './MainHeaderNav'
+import MainFooter from './MainFooterNav'
 import RailsApi from '../Config';
 import PTRView from 'react-native-pull-to-refresh';
 import BackHandlerAndroid from '../Handlers/BackHandlerAndroid'
 import DeepLinking from '../DeepLinking'
+
 
 
 export default class Main extends React.Component {
@@ -22,10 +24,11 @@ export default class Main extends React.Component {
       linkID: linkID
     }
     this.goToTest = this.goToTest.bind(this);
+    //AsyncStorage.multiRemove(AsyncStorage.getAllKeys());
   }
 
   static navigationOptions = ({ navigation }) => ({
-    title: '',
+    title: 'Bienvenido',
     headerLeft: null,
     headerRight: ( <MainHeader navigation={navigation} /> ),
     headerStyle: styles.mainHeader,
@@ -106,7 +109,6 @@ export default class Main extends React.Component {
     console.log(prueba);
     test = this.setCompletedProperty(test);
     if(test){
-      //AsyncStorage.removeItem('test-2');
       this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
     }
   }
@@ -178,31 +180,38 @@ export default class Main extends React.Component {
   }
 
   render(){
+    const { height, width } = Dimensions.get('window');
     return(
-        <PTRView onRefresh={this._refresh} >
-          <DeepLinking linkToTest={this.linkToTest.bind(this)} />
-          <BackHandlerAndroid />
-          <View style={styles.titleContainer}>
-              <Text style={styles.title}>Seleccione un test</Text>
+        <View>
+          <PTRView onRefresh={this._refresh} >
+            <DeepLinking linkToTest={this.linkToTest.bind(this)} />
+            <BackHandlerAndroid />
+            <View style={styles.titleContainer}>
+                <Text style={styles.title}>Seleccione un test</Text>
+            </View>
+            <Text style={styles.error}>
+              {this.state.error}
+            </Text>
+            <ScrollView style={{height: height}}>
+            {this.state.testsList.map((test, i) => {
+                return(
+                  <View style={styles.testContainer} key={test.id}>
+                    <TouchableHighlight style={styles.testButton}
+                      onPress={ () => { this.getListTest(test.id) } }
+                      >
+                      <Text style={styles.textButton}>{test.name} </Text>
+                    </TouchableHighlight>
+                  </View>
+                );
+              })
+            }
+            </ScrollView>
+          </PTRView>
+
+          <View style={styles.bottomNav}>
+            <MainFooter navigation={this.props.navigation} getListTest={this.getListTest.bind(this)} />
           </View>
-          <Text style={styles.error}>
-            {this.state.error}
-          </Text>
-          <View>
-          {this.state.testsList.map((test, i) => {
-              return(
-                <View style={styles.testContainer} key={test.id}>
-                  <TouchableHighlight style={styles.testButton}
-                    onPress={ () => { this.getListTest(test.id) } }
-                    >
-                    <Text style={styles.textButton}>{test.name} </Text>
-                  </TouchableHighlight>
-                </View>
-              );
-            })
-          }
-          </View>
-        </PTRView>
+        </View>
     );
   }
 }
@@ -244,8 +253,18 @@ const styles= StyleSheet.create({
     paddingTop: 10,
     marginLeft: 10,
     marginRight: 10
+  },
+  bottomNav:{
+    backgroundColor:'#000000',
+    marginTop: 15,
+    position: 'absolute',
+    bottom:0,
+    //left:0,
+
   }
 })
+
+
 
 
 
