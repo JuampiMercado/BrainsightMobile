@@ -29,7 +29,6 @@ export default class Pending extends React.Component {
 
   async _GetStorageTest(){
     let keys = await AsyncStorage.getAllKeys();
-    console.log(keys);
     let list = [];
     for(var i = 0, len = keys.length; i < len; i++){
       if(keys[i].indexOf('test-') != -1){
@@ -47,7 +46,6 @@ export default class Pending extends React.Component {
   }
   render(){
     let lista = this.state.testList;
-    console.log(lista);
     return(
       <View style={styles.container}>
         <View style={styles.titleContainer}>

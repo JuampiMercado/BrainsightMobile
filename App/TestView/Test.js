@@ -96,6 +96,7 @@ export default class Test extends React.Component {
 
   render(){
     const { navigate } = this.props.navigation;
+    console.log(this.state.test);
     return(
       <View style={styles.container}>
         <TouchableHighlight style={styles.testButton}

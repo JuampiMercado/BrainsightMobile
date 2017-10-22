@@ -6,10 +6,7 @@ import Login from './Home/Login'
 
 
 export default class HomeScreen extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   componentDidMount() { // B
     this.getUser();
   }
@@ -26,7 +23,7 @@ export default class HomeScreen extends React.Component {
         this.props.navigation.navigate('Main');
       }
     } catch (error) {
-      console.log("Something went wrong");
+      console.log("[getUser|Root]: " + error);
     }
   }
 

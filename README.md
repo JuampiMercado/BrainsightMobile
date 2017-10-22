@@ -26,3 +26,8 @@ See steps of Option:Manually.
 Important! On @Override step do it on MainApplication.java, no on MainActivity
 
 https://www.npmjs.com/package/react-native-sensor-manager
+
+
+#Push Notifications
+https://github.com/zo0r/react-native-push-notification
+npm install --save react-native-push-notification

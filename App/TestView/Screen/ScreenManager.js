@@ -3,13 +3,9 @@ import {View, TouchableHighlight, Text,TextInput, StyleSheet, AsyncStorage,Devic
 import ScreenHeaderNav from './ScreenHeaderNav'
 import { StackNavigator } from 'react-navigation';
 import Screen from './Screen';
+import { SensorManager } from 'NativeModules';
 
 
-var mSensorManager = require('NativeModules').SensorManager;
-var temperatura = 0;
-var light = 0;
-var proximity = 0;
-var _handlerThermo,_handlerLight,_handlerProxy,_handlerGyroscope;
 
 export default class ScreenManager extends React.Component {
 
@@ -25,8 +21,13 @@ export default class ScreenManager extends React.Component {
       stages: params.stages,
       currentStage: params.currentStage,
       lastStage: params.lastStage,
-      sensors: { reaction: new Date(), thermometer: 0, lightSensor: 0, proximity: 0 }
+      reaction: { begin: new Date(), end: null, difference: 0},
+      thermometer: 0, 
+      light: 0,  
+      accelerometer: {x: 0, y:0, z:0}, 
+      gyroscope:{x:0, y:0,z:0}
     }
+
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -41,8 +42,8 @@ export default class ScreenManager extends React.Component {
 
   static navigationOptions = ({ navigation }) => ({
     title: '',
-    headerLeft: ( <ScreenHeaderNav position={'left'} navigation={navigation} /> ),
-    headerRight: ( <ScreenHeaderNav position={'right'} navigation={navigation} /> ),
+    headerLeft: ( <ScreenHeaderNav position={'left'} navigation={navigation}  /> ),
+    headerRight: ( <ScreenHeaderNav position={'right'} navigation={navigation}   /> ),
     headerStyle: styles.mainHeader,
     headerTintColor: '#FFF',
   });
@@ -52,16 +53,17 @@ export default class ScreenManager extends React.Component {
   }
 
   componentWillUnmount() {
-    this._handlerLight.remove();
-    this._handlerProxy.remove();
-    this._handlerThermo.remove();
-    this._handlerGyroscope.remove();
+    DeviceEventEmitter.removeListener('Accelerometer');
+    DeviceEventEmitter.removeListener('LightSensor');
+    DeviceEventEmitter.removeListener('Thermometer');
+    DeviceEventEmitter.removeListener('Gyroscope');
   }
-
 
   GoTo()
   {
+    
     this._setSensorValue();
+    this._stopSensors();
     if (this.state.currentScreen == this.state.lastScreen){
       this.props.navigation.state.params.SetCompleteElement(this.state.currentStage);
     }
@@ -71,13 +73,13 @@ export default class ScreenManager extends React.Component {
     {
       //Si es la ultima pantalla, mando al StageManager
       this.props.navigation.navigate('StageManager',
-        {
-          user: this.state.user,
-          test: this.state.test,
-          stages: this.state.stages,
-          currentStage: this.state.currentStage + 1
-        }
-      );
+      {
+        user: this.state.user,
+        test: this.state.test,
+        stages: this.state.stages,
+        currentStage: this.state.currentStage + 1
+      }
+    );
     }
     else
     {
@@ -100,45 +102,47 @@ export default class ScreenManager extends React.Component {
     }
   }
 
-  async _startSensors(){
-    _handlerLight = await DeviceEventEmitter.addListener('LightSensor', function (data) {
-      light = data.light;
-    });
-    _handlerThermo = await DeviceEventEmitter.addListener('Thermometer', function (data) {
-      console.log(data.temp);
-      temperatura = (temperatura + (data.temp==undefined? temperatura : data.temp)) / 2;
-    });
-    _handlerProxy = await DeviceEventEmitter.addListener('Proximity', function (data) {
-      /**
-      * data.isNear: [Boolean] A flag representing whether something is near the screen.
-      * data.value: [Number] The raw value returned by the sensor (usually distance in cm).
-      * data.maxRange: [Number] The maximum range of the sensor.
-      **/
-    });
-    _handlerGyroscope = await DeviceEventEmitter.addListener('Gyroscope', function (data) {
-      console.log('data.x: ' + data.x);
-      console.log('data.y: ' + data.y);
-      console.log('data.z: ' + data.z);
-    });
-
-    await mSensorManager.startThermometer(100);
-    await mSensorManager.startLightSensor(100);
-    await mSensorManager.startProximity(100);
-    await mSensorManager.startGyroscope(100);
+  _startSensors(){
+    this._initSensors();
+    this._bindSensorsEvent();
   }
 
+  _initSensors(){
+    SensorManager.startThermometer(100);
+    SensorManager.startLightSensor(100);
+    SensorManager.startGyroscope(100);
+    SensorManager.startAccelerometer(100);
+  }
+  
+  _bindSensorsEvent(){
+    DeviceEventEmitter.addListener('Accelerometer', function(data) {
+      this.setState({accelerometer: {x: data.x, y: data.y, z: data.z}});
+    }.bind(this));
+    DeviceEventEmitter.addListener('LightSensor', function(data){
+      this.setState({light: data.light});
+    }.bind(this));
+    DeviceEventEmitter.addListener('Thermometer', function(data){
+      this.setState({thermometer: data.temp});
+    }.bind(this));
+    DeviceEventEmitter.addListener('Gyroscope', function(data){
+      this.setState({gyroscope: {x: data.x, y: data.y, z:data.z}});
+    }.bind(this));
+    
+  }
+  
   _stopSensors(){
-    mSensorManager.stopThermometer();
-    mSensorManager.stopLightSensor();
-    mSensorManager.stopProximity();
-    mSensorManager.stopGyroscope();
+    SensorManager.stopThermometer();
+    SensorManager.stopLightSensor();
+    SensorManager.stopGyroscope();
+    SensorManager.stopAccelerometer();
   }
+
   _setSensorValue(){
-    var sensors = this.state.sensors;
-    sensors.reaction = ((new Date() - sensors.reaction) / 1000);
-    sensors.lightSensor = light;
-    sensors.thermometer = temperatura;
-    sensors.proximity = proximity;
+    var reaction = this.state.reaction;
+    var now = new Date();
+    reaction.end = now;
+    reaction.difference = now - reaction.begin;
+    var sensors = { reaction: reaction, accelerometer: this.state.accelerometer, thermometer: this.state.thermometer, light: this.state.light, gyroscope: this.state.gyroscope }
     this.props.navigation.state.params.setSensorValue(this.state.currentScreen,sensors);
   }
 
