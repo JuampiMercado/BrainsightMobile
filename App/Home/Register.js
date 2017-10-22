@@ -28,7 +28,7 @@ class Register extends React.Component {
     try {
         await AsyncStorage.setItem('user', user);
     } catch(error) {
-        console.log("Something went wrong");
+        console.log("[SaveUser|Register]: " + error);
     }
   }
 

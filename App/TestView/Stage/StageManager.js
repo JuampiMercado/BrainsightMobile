@@ -2,9 +2,9 @@ import React from 'react';
 import {Text,View,TouchableHighlight, StyleSheet, AsyncStorage,Alert } from 'react-native';
 import RailsApi from '../../Config';
 import { StackNavigator } from 'react-navigation';
-//import { PushNotification  } from 'react-native-push-notification';
+import { PushNotification  } from 'react-native-push-notification';
 
-var PushNotification = require('react-native-push-notification');
+//var PushNotification = require('react-native-push-notification');
 export default class StageManager extends React.Component {
 
   constructor(props){
@@ -104,6 +104,7 @@ export default class StageManager extends React.Component {
       //There are still stages
       if (this._isEnableTimeRange(currentStage) && !this._betweenTimeRange(currentStage)){
         this._pushNotification(currentStage);
+        
       }
       /*Checking if are screens complete*/
       var currentScreen = 0;
@@ -173,7 +174,7 @@ export default class StageManager extends React.Component {
           throw error;
       }
     } catch(error) {
-        console.log(error);
+        console.log('[_FetchResult|StageManager]' + error);
     }
 
     Alert.alert(
@@ -193,6 +194,7 @@ export default class StageManager extends React.Component {
     for(var i = 0,len = stages[this.state.currentStage].screens[screen].elements.length; i < len; i++ ){
       stages[this.state.currentStage].screens[screen].elements[i].sensors = sensors;
     }
+    console.log('[_setSensorValue|StageManager]')
     console.log(stages);
     this.setState({stages: stages});
   }
@@ -241,7 +243,7 @@ export default class StageManager extends React.Component {
     if (state == 1){//If completed
       result.data = JSON.stringify(stages);
     }
-    console.log('Envio resultados');
+    console.log('[_PersistResults|StageManager]');
     console.log(result);
     this._FetchResult(result);
   }

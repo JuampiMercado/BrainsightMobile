@@ -24,7 +24,6 @@ export default class Main extends React.Component {
       linkID: linkID
     }
     this.goToTest = this.goToTest.bind(this);
-    //AsyncStorage.multiRemove(['test-11']);
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -105,10 +104,9 @@ export default class Main extends React.Component {
 
   goToTest(test){
     //Add completed property to stages and screens before execute test.
-    console.log(test);
-    console.log(prueba);
-    //test = prueba;
     test = this.setCompletedProperty(test);
+    console.log('[goToTest|Main]:')
+    console.log(test);
     if(test){
       this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
     }
@@ -126,7 +124,6 @@ export default class Main extends React.Component {
     //I must manage redirection with linkID because it's entering on loop
     if(this.state.linkID){
       var test = await this.fetchLinkingTest(id);
-      console.log('test:' + test);
       if(test && test != undefined){
         //test.data = [stage1, stage2,stage3];
         this.goToTest(test);
@@ -153,7 +150,6 @@ export default class Main extends React.Component {
   }
 
   async fetchLinkingTest(id){
-    console.log('Test ID: ' + id);
     try {
       let response = await fetch(RailsApi('test'), {
         method: 'post',
@@ -175,7 +171,7 @@ export default class Main extends React.Component {
           return null;
       }
     } catch(error) {
-        console.log(error);
+        console.log('[fetchLinkingTest|Main]:' + error);
     }
 
   }

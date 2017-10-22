@@ -23,7 +23,7 @@ export default class HomeScreen extends React.Component {
         this.props.navigation.navigate('Main');
       }
     } catch (error) {
-      console.log("Something went wrong");
+      console.log("[getUser|Root]: " + error);
     }
   }
 

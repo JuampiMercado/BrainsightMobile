@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { Text,View,StyleSheet,TouchableHighlight, AsyncStorage,Alert } from 'react-native';
+import { Text,View,StyleSheet,TouchableHighlight, AsyncStorage,Alert,NativeModules } from 'react-native';
 import { StackNavigator } from 'react-navigation';
+import { SensorManager } from 'NativeModules';
 
 export default class ScreenHeaderNav extends React.Component {
 
@@ -11,15 +12,25 @@ export default class ScreenHeaderNav extends React.Component {
       position: this.props.position == undefined ? 'right' : this.props.position
     }
   }
+
+  _stopSensors(){
+    SensorManager.stopThermometer();
+    SensorManager.stopLightSensor();
+    SensorManager.stopProximity();
+    SensorManager.stopGyroscope();
+    SensorManager.stopAccelerometer();
+    
+  }
+
   render(){
     element = null;
     switch(this.state.position)
     {
       case 'left':
-        element = <ScreenLeftNav {...this.state} />
+        element = <ScreenLeftNav {...this.state} _stopSensors={this._stopSensors.bind(this)} />
         break;
       case 'right':
-        element = <ScreenRightNav {...this.state} />
+        element = <ScreenRightNav {...this.state} _stopSensors={this._stopSensors.bind(this)} />
         break;
     }
     return element;
@@ -45,6 +56,7 @@ class ScreenLeftNav extends React.Component{
 
   }
   cancelTest(){
+    this.props._stopSensors();
     AsyncStorage.removeItem('test-' + this.props.navigation.state.params.test.id);
     this.props.navigation.state.params.PersistResults(0);
   }
@@ -62,6 +74,7 @@ class ScreenLeftNav extends React.Component{
 
 class ScreenRightNav extends React.Component{
   SaveTest(){
+    this.props._stopSensors();
     this.props.navigation.state.params.SaveAsyncStorage(this.props.navigation.state.params.test.id)
     this.props.navigation.navigate('Main');
   }

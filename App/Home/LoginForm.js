@@ -23,7 +23,7 @@ export default class LoginForm extends React.Component{
         throw err;
       }
     }).catch((err)=> {
-        console.log("error is: " + err);
+        console.log("[SaveUser|LoginForm]: " + err);
     });
   }
 
