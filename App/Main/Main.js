@@ -23,7 +23,7 @@ export default class Main extends React.Component {
       refreshing: false,
       linkID: linkID
     }
-    this.goToTest = this.goToTest.bind(this);
+    this._goToTest = this._goToTest.bind(this);
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -45,20 +45,20 @@ export default class Main extends React.Component {
   }
 
   componentWillMount(){
-    var user = this.getUser();
-    this.GetTests(3,user.id);
+    var user = this._getUser();
+    this._getTests(3,user.id);
 
   }
 
   _refresh= () => {
     return new Promise((resolve) => {
       this.setState({testsList: [], error: ""});
-      this.GetTests(3, this.state.user.id);
+      this._getTests(3, this.state.user.id);
       setTimeout(()=>{resolve()}, 2000)
     });
   }
 
-  async getUser(){
+  async _getUser(){
     try {
       let user = await AsyncStorage.getItem('user');
       if (user != null && user != undefined && user != null){
@@ -73,7 +73,7 @@ export default class Main extends React.Component {
     }
   }
 
-  async GetTests(intentos,userid) {
+  async _getTests(intentos,userid) {
     if (intentos == 0){
       this.setState({error: 'No se han podido descargar test. Por favor, intentelo de nuevo más tarde.'})
       return;
@@ -89,7 +89,6 @@ export default class Main extends React.Component {
             id: userid
           }),
         });
-
       let res = await response.text();
       if (response.status >= 200 && response.status < 300) {
           this.setState({testsList: JSON.parse(res)});
@@ -98,14 +97,14 @@ export default class Main extends React.Component {
           throw error;
       }
     } catch(error) {
-        this.GetTests(intentos-1,userid);
+        this._getTests(intentos-1,userid);
     }
   }
 
-  goToTest(test){
+  _goToTest(test){
     //Add completed property to stages and screens before execute test.
-    test = this.setCompletedProperty(test);
-    console.log('[goToTest|Main]:')
+    test = this._setCompletedProperty(test);
+    console.log('[_goToTest|Main]:')
     console.log(test);
     if(test){
       this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
@@ -115,25 +114,25 @@ export default class Main extends React.Component {
   async getListTest(id){
     var test = await this.fetchLinkingTest(id);
     if(test && test != undefined){
-      this.goToTest(test);
+      this._goToTest(test);
     }
   }
 
-  async linkToTest(id){
+  async _linkToTest(id){
     //This function is calling by the component DeepLinking
     //I must manage redirection with linkID because it's entering on loop
     if(this.state.linkID){
       var test = await this.fetchLinkingTest(id);
       if(test && test != undefined){
         //test.data = [stage1, stage2,stage3];
-        this.goToTest(test);
+        this._goToTest(test);
       }
     }
   }
 
 
 
-  setCompletedProperty(test){
+  _setCompletedProperty(test){
     if(test.data){
       test.data.map((stage, i) => {
         stage.completed = false;
@@ -181,7 +180,7 @@ export default class Main extends React.Component {
     return(
         <View>
           <PTRView onRefresh={this._refresh} >
-            <DeepLinking linkToTest={this.linkToTest.bind(this)} />
+            <DeepLinking linkToTest={this._linkToTest.bind(this)} />
             <BackHandlerAndroid />
             <View style={styles.titleContainer}>
                 <Text style={styles.title}>Seleccione un test</Text>
@@ -265,7 +264,7 @@ const styles= StyleSheet.create({
 
 
 
-
+/*
 
 //BASIC STRUCTURE
 //test
@@ -275,12 +274,12 @@ test.data = []; //data es el campo del json de la base. Va a ser un array de sta
 //etapas
 element.type = 'stage';
 element.screens = []
-element.config = { /* configuraciones*/ };
+//element.config = {  configuraciones };
 element.completed = false;
 //pantallas
 element.type = 'screen';
 element.elements = [];
-element.config = { /*configuraciones*/ };
+//element.config = { configuraciones };
 element.completed = false;
 //elementos
 element.type = 'text';
@@ -333,7 +332,7 @@ var stage3 = { type: 'stage', screens: [screen5, screen6], config:null }
 var prueba = { id: 2, name: 'Object Prueba', data: [stage1, stage2,stage3] };
 
 
-
+*/
 
 
 /* Primer ejemplo
