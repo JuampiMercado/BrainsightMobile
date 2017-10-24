@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: ancho,
     paddingTop:50,
-    opacity: 0.8
+    opacity: 0.7 // 0.8
   },
   logoContainer: {
     alignItems:'center',

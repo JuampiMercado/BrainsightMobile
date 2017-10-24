@@ -2,7 +2,8 @@ import React from 'react';
 import { AppRegistry,  } from 'react-native';
 import { StackNavigator  } from 'react-navigation';
 
-import HomeScreen from './Root'
+import Root from './Root'
+import Home from './Home/Home'
 import Register from './Home/Register'
 import Login from './Home/Login'
 import Main from './Main/Main'
@@ -15,7 +16,8 @@ import Orientation from 'react-native-orientation';
 import Pending from './Main/Pending'
 
 const Router = StackNavigator({
-  Home: { screen: HomeScreen },
+  Root: { screen: Root },
+  Home: { screen: Home },
   Register: { screen: Register },
   Main: { screen: Main },
   Profile: { screen: Profile },
@@ -24,7 +26,7 @@ const Router = StackNavigator({
   ScreenManager: { screen: ScreenManager},
   VideoPlayerView: { screen: VideoPlayerView},
   Pending: {screen: Pending}
-},{initialRouteName: 'Home'});
+},{initialRouteName: 'Root'});
 
 
 
