@@ -23,8 +23,6 @@ export default class Test extends React.Component {
 
   componentWillMount(){
     this.GetTest();
-    this.FetchResult();
-
   }
 
   async GetTest(){
@@ -48,51 +46,7 @@ export default class Test extends React.Component {
 
 
 
-  async FetchResult(){
-    try {
-      let response = await fetch(RailsApi('existResult'), {
-        method: 'post',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            user_id: this.state.user.id,
-            test_id: this.state.test.id
-          }),
-        });
-
-      let res = await response.text();
-      if (response.status >= 200 && response.status < 300) {
-          var exists = JSON.parse(res);
-          if(exists){
-            Alert.alert(
-              'Error',
-              'Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
-              [
-                {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main',{linkID: false})},
-
-              ],
-              { cancelable: false }
-            )
-          }
-      } else {
-          let error = res;
-          throw error;
-      }
-    } catch(error) {
-        Alert.alert(
-        'Error',
-        'Se ha producido un error, por favor, intentelo nuevamente mas tarde',
-        [
-          {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main',{linkID: false})},
-
-        ],
-        { cancelable: false }
-      )
-      console.log(error);
-    }
-  }
+  
 
   render(){
     const { navigate } = this.props.navigation;

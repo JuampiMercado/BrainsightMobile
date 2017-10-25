@@ -42,7 +42,7 @@ export default class Pending extends React.Component {
 
 
   _GoToTest(id){
-    this.props.navigation.state.params.getListTest(id);
+    this.props.navigation.state.params._getTest(id);
   }
   render(){
     let lista = this.state.testList;

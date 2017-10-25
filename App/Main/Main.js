@@ -46,14 +46,14 @@ export default class Main extends React.Component {
 
   componentWillMount(){
     var user = this._getUser();
-    this._getTests(3,user.id);
+    this._fetchListOfTests(3,user.id);
 
   }
 
   _refresh= () => {
     return new Promise((resolve) => {
       this.setState({testsList: [], error: ""});
-      this._getTests(3, this.state.user.id);
+      this._fetchListOfTests(3, this.state.user.id);
       setTimeout(()=>{resolve()}, 2000)
     });
   }
@@ -73,7 +73,63 @@ export default class Main extends React.Component {
     }
   }
 
-  async _getTests(intentos,userid) {
+  _goToTest(test){
+    //Add completed property to stages and screens before execute test.
+    test = this._setCompletedProperty(test);
+    console.log('[_goToTest|Main]:')
+    console.log(test);
+    if(test){
+      this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
+    }
+  }
+
+  async _getTest(id){
+    var exists = await this._existResult(id);
+    if(exists){
+      Alert.alert('No se puede acceder','Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
+        //[ {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main',{linkID: false})}, ],
+        [ {text: 'Continuar', onPress: () => this.setState({linkID: false})}, ],
+        { cancelable: false }
+      )
+    }
+    else{
+      var test = await this._fetchTest(id);
+      if(test && test != undefined){
+        this._goToTest(test);
+      }
+    }
+    
+  }
+
+  async _linkToTest(id){
+    //This function is calling by the component DeepLinking
+    //I must manage redirection with linkID because it's entering on loop
+    if(this.state.linkID){
+      this._getTest(id);
+    }
+  }
+
+  _existResult(testid){
+    return this._fetchResult(this.state.user.id,testid);
+  }
+
+  _setCompletedProperty(test){
+    if(test.data){
+      test.data.map((stage, i) => {
+        stage.completed = false;
+        stage.screens.map((screen,j) =>{
+          screen.completed = false;
+        });
+      });
+      return test;
+    }
+    else{
+      Alert.alert('Error en el test','El test tiene un error y no puede iniciarse.')
+      return null;
+    }
+  }
+
+  async _fetchListOfTests(intentos,userid) {
     if (intentos == 0){
       this.setState({error: 'No se han podido descargar test. Por favor, intentelo de nuevo más tarde.'})
       return;
@@ -97,58 +153,11 @@ export default class Main extends React.Component {
           throw error;
       }
     } catch(error) {
-        this._getTests(intentos-1,userid);
+        this._fetchListOfTests(intentos-1,userid);
     }
   }
 
-  _goToTest(test){
-    //Add completed property to stages and screens before execute test.
-    test = this._setCompletedProperty(test);
-    console.log('[_goToTest|Main]:')
-    console.log(test);
-    if(test){
-      this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
-    }
-  }
-
-  async getListTest(id){
-    var test = await this.fetchLinkingTest(id);
-    if(test && test != undefined){
-      this._goToTest(test);
-    }
-  }
-
-  async _linkToTest(id){
-    //This function is calling by the component DeepLinking
-    //I must manage redirection with linkID because it's entering on loop
-    if(this.state.linkID){
-      var test = await this.fetchLinkingTest(id);
-      if(test && test != undefined){
-        //test.data = [stage1, stage2,stage3];
-        this._goToTest(test);
-      }
-    }
-  }
-
-
-
-  _setCompletedProperty(test){
-    if(test.data){
-      test.data.map((stage, i) => {
-        stage.completed = false;
-        stage.screens.map((screen,j) =>{
-          screen.completed = false;
-        });
-      });
-      return test;
-    }
-    else{
-      Alert.alert('Error en el test','El test tiene un error y no puede iniciarse.')
-      return null;
-    }
-  }
-
-  async fetchLinkingTest(id){
+  async _fetchTest(id){
     try {
       let response = await fetch(RailsApi('test'), {
         method: 'post',
@@ -170,10 +179,49 @@ export default class Main extends React.Component {
           return null;
       }
     } catch(error) {
-        console.log('[fetchLinkingTest|Main]:' + error);
+        console.log('[_fetchTest|Main]:' + error);
     }
-
   }
+
+  async _fetchResult(userid, testid){
+    var exists = true;
+    try {
+      let response = await fetch(RailsApi('existResult'), {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: userid,
+            test_id: testid
+          }),
+        });
+
+      let res = await response.text();
+      if (response.status >= 200 && response.status < 300) {
+          exists = res == "true";
+      } else {
+          let error = res;
+          throw error;
+      }
+    } catch(error) {
+        Alert.alert(
+        'Error',
+        'Se ha producido un error, por favor, intentelo nuevamente mas tarde',
+        [
+          //{text: 'Continuar', onPress: () => this.props.navigation.navigate('Main',{linkID: false})},
+         {text: 'Continuar', onPress: () => this.setState({linkID: false})},
+
+        ],
+        { cancelable: false }
+      )
+      console.log(error);
+    }
+    console.log(exists);
+    return exists;
+  }
+
 
   render(){
     const { height, width } = Dimensions.get('window');
@@ -193,7 +241,7 @@ export default class Main extends React.Component {
                 return(
                   <View style={styles.testContainer} key={test.id}>
                     <TouchableHighlight style={styles.testButton}
-                      onPress={ () => { this.getListTest(test.id) } }
+                      onPress={ () => { this._getTest(test.id) } }
                       >
                       <Text style={styles.textButton}>{test.name} </Text>
                     </TouchableHighlight>
@@ -205,7 +253,7 @@ export default class Main extends React.Component {
           </PTRView>
 
           <View style={styles.bottomNav}>
-            <MainFooter navigation={this.props.navigation} getListTest={this.getListTest.bind(this)} />
+            <MainFooter navigation={this.props.navigation} _getTest={this._getTest.bind(this)} />
           </View>
         </View>
     );
