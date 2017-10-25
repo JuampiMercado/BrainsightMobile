@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View,ScrollView, StyleSheet, Dimensions,AsyncStorage,TouchableHighlight,Text} from  'react-native';
+import {View,ScrollView, StyleSheet, Dimensions,AsyncStorage,TouchableHighlight,Text, ListView } from  'react-native';
 import { StackNavigator } from 'react-navigation';
 import MainHeader from './MainHeaderNav'
 import MainFooter from './MainFooterNav'
@@ -13,8 +13,9 @@ export default class Pending extends React.Component {
     this.state = {
       testList: [],
       user: this.props.navigation.state.params.user,
+      dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
     }
-    this._GetStorageTest();
+    this._getStorageTest();
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -27,7 +28,7 @@ export default class Pending extends React.Component {
 
 
 
-  async _GetStorageTest(){
+  async _getStorageTest(){
     let keys = await AsyncStorage.getAllKeys();
     let list = [];
     for(var i = 0, len = keys.length; i < len; i++){
@@ -36,37 +37,36 @@ export default class Pending extends React.Component {
         list.push(JSON.parse(test));
       }
     }
-    this.setState({testList: list});
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.setState({testsList: list, dataSource: ds.cloneWithRows(list)});
+    //this.setState({testList: list});
   }
 
 
 
-  _GoToTest(id){
+  _goToTest(id){
     this.props.navigation.state.params._getTest(id);
   }
   render(){
-    let lista = this.state.testList;
     return(
       <View style={styles.container}>
-        <View style={styles.titleContainer}>
-            <Text style={styles.title}>Los siguientes test no fueron terminados o no han sincronizado sus resultados</Text>
-        </View>
-        <ScrollView style={{height: height}}>
-          {this.state.testList.map((test, i) => {
-                if(test.id != undefined){
-                  return(
-                      <View style={styles.testContainer} key={test.id}>
-                        <TouchableHighlight style={styles.testButton}
-                          onPress={ () => { this._GoToTest(test.id) } }
-                          >
-                          <Text style={styles.textButton}>{test.name} </Text>
-                        </TouchableHighlight>
-                      </View>
-                    );
-                }
-              })
-
+        <ScrollView style={styles.main}> 
+          <View style={styles.titleContainer}>
+              <Text style={styles.title}>Los siguientes test no fueron terminados o no han sincronizado sus resultados</Text>
+          </View>
+          <ListView style={styles.listView}
+            dataSource={this.state.dataSource}
+            enableEmptySections={true}
+            renderRow={(test) => 
+              <View style={styles.testContainer} key={test.id}>
+                <TouchableHighlight style={styles.testButton}
+                  onPress={ () => { this._goToTest(test.id) } }
+                  >
+                  <Text style={styles.textButton}>{test.name} </Text>
+                </TouchableHighlight>
+              </View>
             }
+          />
         </ScrollView>
         <View style={styles.bottomNav}>
           <MainFooter navigation={this.props.navigation} />
@@ -85,6 +85,9 @@ const styles= StyleSheet.create({
   },
   mainHeader: {
      backgroundColor: '#000000',
+  },
+  main:{
+    marginBottom: 65,
   },
   title:{
     color: '#FFF',
@@ -122,6 +125,11 @@ const styles= StyleSheet.create({
     marginTop: 15,
     position: 'absolute',
     bottom:0,
+  },
+  bottomNav:{
+    backgroundColor:'#000000',
+    position: 'absolute',
+    bottom:0,
+    height: 40,
   }
-
 });

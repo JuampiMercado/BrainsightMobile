@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Text,View,StyleSheet,TouchableHighlight,AsyncStorage,Alert,ScrollView, Dimensions } from 'react-native';
+import { Text,View,StyleSheet,TouchableHighlight,AsyncStorage,Alert,ScrollView, Dimensions,ListView } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import MainHeader from './MainHeaderNav'
 import MainFooter from './MainFooterNav'
@@ -8,7 +8,7 @@ import PTRView from 'react-native-pull-to-refresh';
 import BackHandlerAndroid from '../Handlers/BackHandlerAndroid'
 import DeepLinking from '../DeepLinking'
 
-
+const { height, width } = Dimensions.get('window');
 
 export default class Main extends React.Component {
   constructor(props){
@@ -21,7 +21,8 @@ export default class Main extends React.Component {
       user: null,
       error: "",
       refreshing: false,
-      linkID: linkID
+      linkID: linkID,
+      dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
     }
     this._goToTest = this._goToTest.bind(this);
   }
@@ -147,7 +148,8 @@ export default class Main extends React.Component {
         });
       let res = await response.text();
       if (response.status >= 200 && response.status < 300) {
-          this.setState({testsList: JSON.parse(res)});
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.setState({testsList: JSON.parse(res), dataSource: ds.cloneWithRows(JSON.parse(res))});
       } else {
           let error = res;
           throw error;
@@ -224,21 +226,22 @@ export default class Main extends React.Component {
 
 
   render(){
-    const { height, width } = Dimensions.get('window');
     return(
-        <View>
+        <View style={styles.container}>
+          <DeepLinking linkToTest={this._linkToTest.bind(this)} />
+          <BackHandlerAndroid />
           <PTRView onRefresh={this._refresh} >
-            <DeepLinking linkToTest={this._linkToTest.bind(this)} />
-            <BackHandlerAndroid />
-            <View style={styles.titleContainer}>
-                <Text style={styles.title}>Seleccione un test</Text>
-            </View>
-            <Text style={styles.error}>
-              {this.state.error}
-            </Text>
-            <ScrollView style={{height: height*1.5}}>
-            {this.state.testsList.map((test, i) => {
-                return(
+            <ScrollView style={styles.main}> 
+              <View style={styles.titleContainer}>
+                  <Text style={styles.title}>Seleccione un test</Text>
+              </View>
+              <Text style={styles.error}>
+                {this.state.error}
+              </Text>
+              
+              <ListView style={styles.listView}
+                dataSource={this.state.dataSource}
+                renderRow={(test) => 
                   <View style={styles.testContainer} key={test.id}>
                     <TouchableHighlight style={styles.testButton}
                       onPress={ () => { this._getTest(test.id) } }
@@ -246,9 +249,8 @@ export default class Main extends React.Component {
                       <Text style={styles.textButton}>{test.name} </Text>
                     </TouchableHighlight>
                   </View>
-                );
-              })
-            }
+                }
+              />
             </ScrollView>
           </PTRView>
 
@@ -260,6 +262,8 @@ export default class Main extends React.Component {
   }
 }
 
+
+
 const styles= StyleSheet.create({
   container: {
     flex: 1,
@@ -267,6 +271,9 @@ const styles= StyleSheet.create({
   },
   mainHeader: {
      backgroundColor: '#000000',
+  },
+  main:{
+    marginBottom: 65,
   },
   titleContainer:{
     borderColor: '#000000',
@@ -300,11 +307,9 @@ const styles= StyleSheet.create({
   },
   bottomNav:{
     backgroundColor:'#000000',
-    marginTop: 15,
     position: 'absolute',
     bottom:0,
-    //left:0,
-
+    height: 40,
   }
 })
 
@@ -314,7 +319,7 @@ const styles= StyleSheet.create({
 
 /*
 
-//BASIC STRUCTURE
+//BASIC STRUCTURE 
 //test
 var test = new Object();
 var element = new Object();
