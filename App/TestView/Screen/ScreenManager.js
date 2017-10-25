@@ -22,10 +22,11 @@ export default class ScreenManager extends React.Component {
       currentStage: params.currentStage,
       lastStage: params.lastStage,
       reaction: { begin: new Date(), end: null, difference: 0},
-      thermometer: 0, 
-      light: 0,  
-      accelerometer: {x: 0, y:0, z:0}, 
-      gyroscope:{x:0, y:0,z:0}
+      thermometer: 0,
+      light: 0,
+      accelerometer: {x: 0, y:0, z:0},
+      gyroscope:{x:0, y:0,z:0},
+      stepCounter: 0
     }
 
   }
@@ -57,11 +58,12 @@ export default class ScreenManager extends React.Component {
     DeviceEventEmitter.removeListener('LightSensor');
     DeviceEventEmitter.removeListener('Thermometer');
     DeviceEventEmitter.removeListener('Gyroscope');
+    DeviceEventEmitter.removeListener('StepCounter');
   }
 
   GoTo()
   {
-    
+
     this._setSensorValue();
     this._stopSensors();
     if (this.state.currentScreen == this.state.lastScreen){
@@ -112,8 +114,9 @@ export default class ScreenManager extends React.Component {
     SensorManager.startLightSensor(100);
     SensorManager.startGyroscope(100);
     SensorManager.startAccelerometer(100);
+    SensorManager.startStepCounter(1000);
   }
-  
+
   _bindSensorsEvent(){
     DeviceEventEmitter.addListener('Accelerometer', function(data) {
       this.setState({accelerometer: {x: data.x, y: data.y, z: data.z}});
@@ -127,14 +130,17 @@ export default class ScreenManager extends React.Component {
     DeviceEventEmitter.addListener('Gyroscope', function(data){
       this.setState({gyroscope: {x: data.x, y: data.y, z:data.z}});
     }.bind(this));
-    
+    DeviceEventEmitter.addListener('StepCounter', function(data){
+      this.setState({stepCounter: data.steps});
+    }.bind(this));
   }
-  
+
   _stopSensors(){
     SensorManager.stopThermometer();
     SensorManager.stopLightSensor();
     SensorManager.stopGyroscope();
     SensorManager.stopAccelerometer();
+    SensorManager.stopStepCounter();
   }
 
   _setSensorValue(){
@@ -142,7 +148,7 @@ export default class ScreenManager extends React.Component {
     var now = new Date();
     reaction.end = now;
     reaction.difference = now - reaction.begin;
-    var sensors = { reaction: reaction, accelerometer: this.state.accelerometer, thermometer: this.state.thermometer, light: this.state.light, gyroscope: this.state.gyroscope }
+    var sensors = { reaction: reaction, accelerometer: this.state.accelerometer, thermometer: this.state.thermometer, light: this.state.light, gyroscope: this.state.gyroscope, stepCounter: this.state.stepCounter }
     this.props.navigation.state.params.setSensorValue(this.state.currentScreen,sensors);
   }
 
