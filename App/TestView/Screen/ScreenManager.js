@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, TouchableHighlight, Text,TextInput, StyleSheet, AsyncStorage,DeviceEventEmitter,NativeModules } from 'react-native';
+import {View, TouchableHighlight, Text,TextInput, StyleSheet, AsyncStorage,DeviceEventEmitter,NativeModules,Keyboard } from 'react-native';
 import ScreenHeaderNav from './ScreenHeaderNav'
 import { StackNavigator } from 'react-navigation';
 import Screen from './Screen';
@@ -50,6 +50,7 @@ export default class ScreenManager extends React.Component {
   });
 
   componentDidMount(){
+    Keyboard.dismiss();
     this._startSensors();
   }
 

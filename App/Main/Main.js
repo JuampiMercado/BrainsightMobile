@@ -25,6 +25,7 @@ export default class Main extends React.Component {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
     }
     this._goToTest = this._goToTest.bind(this);
+    //AsyncStorage.removeItem('test-23');
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -88,7 +89,6 @@ export default class Main extends React.Component {
     var exists = await this._existResult(id);
     if(exists){
       Alert.alert('No se puede acceder','Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
-        //[ {text: 'Continuar', onPress: () => this.props.navigation.navigate('Main',{linkID: false})}, ],
         [ {text: 'Continuar', onPress: () => this.setState({linkID: false})}, ],
         { cancelable: false }
       )

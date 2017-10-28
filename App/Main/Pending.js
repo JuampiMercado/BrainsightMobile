@@ -16,6 +16,7 @@ export default class Pending extends React.Component {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
     }
     this._getStorageTest();
+    this._goToTest = this._goToTest.bind(this);
   }
 
   static navigationOptions = ({ navigation }) => ({

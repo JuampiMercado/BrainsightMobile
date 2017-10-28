@@ -2,9 +2,9 @@ import React from 'react';
 import {Text,View,TouchableHighlight, StyleSheet, AsyncStorage,Alert } from 'react-native';
 import RailsApi from '../../Config';
 import { StackNavigator } from 'react-navigation';
-import { PushNotification  } from 'react-native-push-notification';
+//import { PushNotification  } from 'react-native-push-notification';
 
-//var PushNotification = require('react-native-push-notification');
+var PushNotification = require('react-native-push-notification');
 export default class StageManager extends React.Component {
 
   constructor(props){
@@ -17,8 +17,9 @@ export default class StageManager extends React.Component {
       stages: params.stages,
       currentStage: params.currentStage,
       lastStage: params.stages.length - 1 //Final stage
-      ,show: ''
+      ,show: null
     }
+    this._setNotification = this._setNotification.bind(this);
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -104,7 +105,7 @@ export default class StageManager extends React.Component {
       //There are still stages
       if (this._isEnableTimeRange(currentStage) && !this._betweenTimeRange(currentStage)){
         this._pushNotification(currentStage);
-        
+        return false;
       }
       /*Checking if are screens complete*/
       var currentScreen = 0;
@@ -252,6 +253,7 @@ export default class StageManager extends React.Component {
     return(
       <View style={styles.container}>
         {this.state.show}
+        
       </View>
     );
   }
