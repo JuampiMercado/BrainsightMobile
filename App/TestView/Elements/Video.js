@@ -1,5 +1,5 @@
 import React from 'react';
-import {View,TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native';
+import {View,TouchableOpacity, Text, StyleSheet, Dimensions,WebView } from 'react-native';
 import Orientation from 'react-native-orientation'
 import { StackNavigator } from 'react-navigation';
 
@@ -9,7 +9,7 @@ export default class TestVideo extends React.Component {
     super(props);
     this.state = {
       id: this.props.id,
-      source: this.props.source ,
+      source: this.props.url ,
       title: this.props.title
     }
   }
@@ -19,16 +19,30 @@ export default class TestVideo extends React.Component {
   }
 
   render(){
-    return (
-        <View>
-
-          <TouchableOpacity style={styles.button} onPress={() => this.playVideo()}>
-            <Text style={styles.text}>Presione para reproducir el video</Text>
-          </TouchableOpacity>
-        </View>
-    );
+    if(this.state.source.indexOf('.mp4')!= -1)
+    {
+      return (
+          <View>
+            <TouchableOpacity style={styles.button} onPress={() => this.playVideo()}>
+              <Text style={styles.text}>Presione para reproducir el video</Text>
+            </TouchableOpacity>
+          </View>
+      );
+    }
+    else{
+      return(
+        <WebView
+          style={styles.video}
+          javaScriptEnabled={true}
+          source={{uri: this.state.source}}
+        />
+        
+      )
+    }
   }
 }
+
+const {height, width} = Dimensions.get('window');
 
 const styles= StyleSheet.create({
   button:{
@@ -38,5 +52,10 @@ const styles= StyleSheet.create({
   text:{
     textAlign:'center',
     color:'#FFF',
+  },
+  video: {
+    marginTop: 20,
+    width: width,
+    height: height *0.4
   }
 })

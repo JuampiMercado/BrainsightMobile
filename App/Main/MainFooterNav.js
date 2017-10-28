@@ -49,6 +49,8 @@ const styles= StyleSheet.create({
     alignItems: 'center',
     borderRightWidth: 0.5,
     borderRightColor: '#000',
+    borderTopWidth: 0.5,
+    borderTopColor: '#000'
   },
   rightButton:{
      position:'absolute',
@@ -57,5 +59,7 @@ const styles= StyleSheet.create({
     justifyContent:'center',
     width: width/2,
     alignSelf:'flex-end',
+    borderTopWidth: 0.5,
+    borderTopColor: '#000'
   }
 })

@@ -1,22 +1,23 @@
 import React from 'react';
 import { View, Image, StyleSheet, Dimensions } from 'react-native';
 
+const path = 'https://brainsight-web.herokuapp.com';
+
 export default class TestImage extends React.Component {
 
   constructor(props){
     super(props);
     this.state = {
       id: this.props.id,
-      source: this.props.source,
+      source: this.props.contentImage,
     }
   }
 
 
   render(){
-    //var source = require(this.state.source);
     return (
         <View>
-          <Image source={{uri: this.state.source}} style={styles.image}></Image>
+          <Image source={{uri: path + this.state.source}} style={styles.image}></Image>
         </View>
     );
   }

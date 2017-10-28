@@ -10,7 +10,7 @@ export default class Question extends React.Component {
   }
 
 
-  shouldComponentUpdate(nextProps, nextState) {
+  /*shouldComponentUpdate(nextProps, nextState) {
     if (this.props.question !== nextState.question) {
       return true;
     }
@@ -18,7 +18,7 @@ export default class Question extends React.Component {
       return true;
     }
     return false;
-  }
+  }*/
 
   _SaveState(value)
   {
@@ -121,7 +121,8 @@ class MultipleChoice extends React.Component{
       id: this.props.id,
       answer: this.props.answer,//Object
       question:  this.props.answer.question,//string
-      result: (this.props.answer.value.indexOf("Esta es una respuesta abierta") != -1 ? "" : this.props.answer.value),
+      //result: (this.props.answer.value.indexOf("Esta es una respuesta abierta") != -1 ? "" : this.props.answer.value),
+      result: (this.props.answer.value == undefined ? "" : this.props.answer.value),
       options: this.props.answer.choices,
     }
     this.ConcatAnswers = this.ConcatAnswers.bind(this);

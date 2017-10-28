@@ -30,7 +30,7 @@ export default class Element extends React.Component {
       case 'MediaContent':
         element = (<TestImage id={this.state.id} {...this.state.config} />);
         break;
-      case 'video':
+      case 'Embed':
         element = (<TestVideo id={this.state.id} {...this.state.config} navigation={this.props.navigation} />);
         break;
       case 'audio':

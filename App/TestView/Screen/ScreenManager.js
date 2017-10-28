@@ -26,12 +26,13 @@ export default class ScreenManager extends React.Component {
       light: 0,
       accelerometer: {x: 0, y:0, z:0},
       gyroscope:{x:0, y:0,z:0},
-      stepCounter: 0
+      stepCounter: 0,
+      enableContinue: false
     }
 
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+ /* shouldComponentUpdate(nextProps, nextState) {
     if (this.state.currentScreen !== nextState.currentScreen) {
       return true;
     }
@@ -40,7 +41,7 @@ export default class ScreenManager extends React.Component {
     }
     return false;
   }
-
+*/
   static navigationOptions = ({ navigation }) => ({
     title: '',
     headerLeft: ( <ScreenHeaderNav position={'left'} navigation={navigation}  /> ),
@@ -86,6 +87,9 @@ export default class ScreenManager extends React.Component {
     }
     else
     {
+      /*
+      this.setState({currentScreen: this.state.currentScreen+1});
+      this.forceUpdate();*/
       this.props.navigation.navigate('ScreenManager',
         {
           user: this.state.user,
@@ -164,7 +168,9 @@ export default class ScreenManager extends React.Component {
       <View style={styles.container}>
         <Screen screen={ this.state.screens[this.state.currentScreen]} navigation={ this.props.navigation } _SaveState={this._SaveState.bind(this)} />
         <View>
-          <TouchableHighlight style={styles.nextButton} onPress={ () => { this.GoTo() } } >
+          <TouchableHighlight 
+            disabled={this.state.enableContinue}
+            style={styles.nextButton} onPress={ () => { this.GoTo() } } >
             <Text style={styles.textButton}>Continuar</Text>
           </TouchableHighlight>
         </View>

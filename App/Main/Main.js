@@ -25,13 +25,14 @@ export default class Main extends React.Component {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
     }
     this._goToTest = this._goToTest.bind(this);
-    //AsyncStorage.removeItem('test-23');
+    
+    AsyncStorage.removeItem('test-24');
   }
 
   static navigationOptions = ({ navigation }) => ({
     title: 'Bienvenido',
     headerLeft: null,
-    headerRight: ( <MainHeader navigation={navigation} /> ),
+    headerRight: ( <MainHeader navigation={navigation}/> ),
     headerStyle: styles.mainHeader,
     headerTintColor: '#FFF',
   });

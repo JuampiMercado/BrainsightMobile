@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text,TextInput, StyleSheet, AsyncStorage } from 'react-native';
+import {View,ScrollView, Text,TextInput, StyleSheet, AsyncStorage } from 'react-native';
 import Element from '../Elements/Element'
 
 export default class Screen extends React.Component {
@@ -15,7 +15,7 @@ export default class Screen extends React.Component {
     var screen = this.state.screen.elements;
     const { navigation, _SaveState } = this.props;
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             {screen.map(function(element, i){
                 return(
                   <View key={'View1-' + i} style={styles.elementContainer} >
@@ -24,7 +24,7 @@ export default class Screen extends React.Component {
                 );
               })
             }
-        </View>
+        </ScrollView>
 
     );
   }

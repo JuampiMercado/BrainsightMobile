@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View,StyleSheet,Text,TouchableHighlight,Keyboard } from 'react-native';
+import { View,StyleSheet,Text,TouchableHighlight,Keyboard,AsyncStorage } from 'react-native';
 import RailsApi from '../Config.js'
 import { StackNavigator } from 'react-navigation';
 
@@ -9,9 +9,9 @@ export default class Profile extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+      user: '',
       name: '',
-      last_name: '',
-//Change password?????? I don't know how to do it with Device(Rails)
+      last_name: ''
     }
 
   }
@@ -20,6 +20,10 @@ export default class Profile extends React.Component {
     headerStyle: styles.mainHeader,
     headerTintColor: '#FFF'
   });
+
+  componentWillMount(){
+    this._getUser();
+  }
 
   async _persistChanges(){
     var userInfo = { name: this.state.name, last_name: this.state.last_name};
@@ -53,12 +57,28 @@ export default class Profile extends React.Component {
     }
   }
   
+  async _getUser(){
+    try {
+      let user = await AsyncStorage.getItem('user');
+      if (user != null && user != undefined && user != null){
+          this.setState({user: JSON.parse(user) }) ;
+          return JSON.parse(user);
+      }
+      else {
+        this.props.navigation.navigate('Home');
+      }
+    } catch (error) {
+      this.props.navigation.navigate('Home');
+    }
+  }
+
   _onLogoutClick(){
     AsyncStorage.removeItem('user');
     this.props.navigation.navigate('Home');
   }
 
   render(){
+    var user = this.state.user;
     return(
       <View style={styles.container}>
         <View style={styles.titleContainer}>
@@ -72,20 +92,32 @@ export default class Profile extends React.Component {
           <Text style={styles.infoHeader}>Apellido</Text>
           <Text style={styles.info}>{user.last_name}</Text>
         </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoHeader}>Sexo</Text>
+          <Text style={styles.info}>{user.gender}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoHeader}>Estudios</Text>
+          <Text style={styles.info}>{user.study}</Text>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.infoHeader}>Fecha de Nacimiento</Text>
+          <Text style={styles.info}>{user.birthdate}</Text>
+        </View>
         <TouchableHighlight
-          style={styles.buttonContainer}
+          style={styles.touchable}
           onPress={this._persistChanges.bind(this)}
         >
-          <Text style={styles.buttonText}>Guardar Cambios</Text>
+          <Text style={styles.textButton}>Guardar Cambios</Text>
         </TouchableHighlight>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Cerrar sesión en el dispositivo</Text>
         </View>
         <TouchableHighlight
-          style={styles.buttonContainer}
+          style={styles.touchable}
           onPress={this._onLogoutClick.bind(this)}
         >
-          <Text style={styles.buttonText}>Cerrar Sesión</Text>
+          <Text style={styles.textButton}>Cerrar Sesión</Text>
         </TouchableHighlight>
       </View>
     );
@@ -124,6 +156,17 @@ const styles= StyleSheet.create({
   },
   info: {
     color: '#000000'
-  }
+  },
+  touchable:{
+    marginTop: 20,
+    marginBottom: 40,
+    marginLeft: 15,
+    marginRight: 15,
+    alignItems: 'center'
+  },
+  textButton:{
+    fontWeight:'bold',
+    color: '#000000'
+  },
 })
 
