@@ -29,7 +29,10 @@ export default class DeepLinking extends React.Component {
 
   push = (url) => {
     if(url && url != undefined){
-      const pathname = url.replace(prefix, '');
+      var scheme = 'https://';
+      if(url.indexOf('http') != -1)
+        scheme = 'http://';
+      const pathname = url.replace(scheme + prefix, '');
       this.props.linkToTest(pathname);
     }
   }
@@ -39,6 +42,7 @@ export default class DeepLinking extends React.Component {
   }
 }
 
-const prefix = Platform.OS == 'android' ? 'https://brainsight-web.herokuapp.com/test/' : 'https://';
+const prefix = Platform.OS == 'android' ? 'brainsight-web.herokuapp.com/test/' : 'https://';
+
 
 
