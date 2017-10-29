@@ -246,7 +246,7 @@ export default class StageManager extends React.Component {
     }
     console.log('[_PersistResults|StageManager]');
     console.log(result);
-    this._FetchResult(result);
+    this._FetchResult(result,state);
   }
 
   render(){
