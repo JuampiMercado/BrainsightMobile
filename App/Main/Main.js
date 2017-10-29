@@ -25,7 +25,7 @@ export default class Main extends React.Component {
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
     }
     this._goToTest = this._goToTest.bind(this);
-    
+
     AsyncStorage.removeItem('test-24');
   }
 
@@ -66,6 +66,9 @@ export default class Main extends React.Component {
       let user = await AsyncStorage.getItem('user');
       if (user != null && user != undefined && user != null){
           this.setState({user: JSON.parse(user) }) ;
+          this.props.navigation.setParams({
+            user: JSON.parse(user)
+          })
           return JSON.parse(user);
       }
       else {
@@ -100,7 +103,7 @@ export default class Main extends React.Component {
         this._goToTest(test);
       }
     }
-    
+
   }
 
   async _linkToTest(id){
@@ -232,17 +235,17 @@ export default class Main extends React.Component {
           <DeepLinking linkToTest={this._linkToTest.bind(this)} />
           <BackHandlerAndroid />
           <PTRView onRefresh={this._refresh} >
-            <ScrollView style={styles.main}> 
+            <ScrollView style={styles.main}>
               <View style={styles.titleContainer}>
                   <Text style={styles.title}>Seleccione un test</Text>
               </View>
               <Text style={styles.error}>
                 {this.state.error}
               </Text>
-              
+
               <ListView style={styles.listView}
                 dataSource={this.state.dataSource}
-                renderRow={(test) => 
+                renderRow={(test) =>
                   <View style={styles.testContainer} key={test.id}>
                     <TouchableHighlight style={styles.testButton}
                       onPress={ () => { this._getTest(test.id) } }
@@ -320,7 +323,7 @@ const styles= StyleSheet.create({
 
 /*
 
-//BASIC STRUCTURE 
+//BASIC STRUCTURE
 //test
 var test = new Object();
 var element = new Object();

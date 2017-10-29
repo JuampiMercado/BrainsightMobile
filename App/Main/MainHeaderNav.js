@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/Entypo';
 const profileIcon = (<Icon name="dots-three-vertical" size={20} color="#FFFFFF" />);
 
 export default class MainHeaderNav extends React.Component {
-  
+
   onLogoutClick(){
     AsyncStorage.removeItem('user');
     this.props.navigation.navigate('Home');
@@ -17,11 +17,11 @@ export default class MainHeaderNav extends React.Component {
   }
 
   render(){
-    const { navigate } = this.props.navigation;
+    const { navigate , state } = this.props.navigation;
     return(
       <View style={styles.container}>
         <TouchableHighlight
-          onPress={ () => {navigate('Profile')} }
+          onPress={ () => {navigate('Profile', {user: state.params.user})} }
         >
         {profileIcon}
         </TouchableHighlight>

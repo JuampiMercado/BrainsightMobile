@@ -1,6 +1,8 @@
 'use strict';
 import React, {Component} from 'react';
-import { StyleSheet, TextInput, TouchableHighlight, AsyncStorage, Text, View, Image,Dimensions,KeyboardAvoidingView,Keyboard } from 'react-native';
+import { StyleSheet, TextInput, TouchableHighlight, AsyncStorage, Text, View, Image,Dimensions,KeyboardAvoidingView,Keyboard, Picker,ScrollView } from 'react-native';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+import DatePicker from 'react-native-datepicker'
 import RailsApi from '../Config.js'
 import { StackNavigator } from 'react-navigation';
 
@@ -19,8 +21,14 @@ class Register extends React.Component {
       email: "",
       password: "",
       password_confirmation: "",
+      gender: '',
+      study: '',
+      birthdate: '',
       errors: [],
       showProgress: false,
+      studyOptions: ["Ninguno", "Primario Incompleto","Primario Completo","Secundario Incompleto",
+        "Secundario Completo","Terciario Incompleto","Terciario Completo","Universitario Incompleto",
+        "Universitario Completo"]
     }
   }
 
@@ -48,6 +56,9 @@ class Register extends React.Component {
                                   email: this.state.email,
                                   password: this.state.password,
                                   password_confirmation: this.state.password_confirmation,
+                                  gender: this.state.gender,
+                                  study: this.state.study,
+                                  birthdate: this.state.birthdate,
                                 }
                               })
                             });
@@ -89,6 +100,7 @@ class Register extends React.Component {
           style={styles.image}
           source={require('../../images/fondoLogin.jpg')}
           >
+      <ScrollView>
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <View style={styles.logoContainer}>
                 <Image style={styles.logo} source={require('../../images/logo.png')}/>
@@ -96,7 +108,9 @@ class Register extends React.Component {
         <Errors errors={this.state.errors}/>
         <TextInput
           onChangeText={ (text)=> this.setState({email: text}) }
-          style={styles.input} placeholder="Email">
+          style={styles.input} placeholder="Email"
+          keyboardType="email-address">
+
         </TextInput>
         <TextInput
           onChangeText={ (text)=> this.setState({password: text}) }
@@ -110,6 +124,64 @@ class Register extends React.Component {
           placeholder="Confirmar contraseña"
           secureTextEntry={true}>
         </TextInput>
+        <View style={styles.input}>
+        <Text style={styles.infoHeader}>Sexo</Text>
+          <RadioForm
+              formHorizontal={true}
+              animation={false}
+              radio_props={ [{label: 'Hombre' , value: 'H' }, {label: 'Mujer' , value: 'M' }]}
+              initial={-1}
+              onPress={(value) => {
+                this.setState({gender: value})
+              }}
+              borderWidth={1}
+              buttonSize={7}
+              buttonOuterSize={15}
+              buttonWrapStyle={{marginLeft: 5, marginRight:10}}
+              buttonColor={'#000'}
+              labelStyle={{paddingRight: 10}}
+          >
+          </RadioForm>
+          </View>
+          <View style={styles.input}>
+          <Text style={styles.infoHeader}>Estudios</Text>
+          <Picker
+            selectedValue={this.state.study}
+            mode="dropdown"
+            onValueChange={(itemValue) => this.setState({study: itemValue})}>
+            {this.state.studyOptions.map((item) => {
+             return (<Picker.Item label={item} value={item} key={item}/>)
+                            })}
+          </Picker>
+          </View>
+          <View style={styles.input}>
+          <Text style={styles.infoHeader}>Fecha de Nacimiento</Text>
+          <DatePicker
+            style={{width: 200}}
+            date={this.state.birthdate}
+            mode="date"
+            androidMode="spinner"
+            placeholder="Fecha"
+            format="DD/MM/YYYY"
+            minDate="01/01/1900"
+            maxDate={Date.now.toString()}
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+            customStyles={{
+              dateIcon: {
+                position: 'absolute',
+                left: 0,
+                top: 4,
+                marginLeft: 0
+              },
+              dateInput: {
+                marginLeft: 36
+              }
+              // ... You can check the source to find the other keys.
+            }}
+            onDateChange={(date) => {this.setState({birthdate: date})}}
+          />
+          </View>
         <TouchableHighlight onPress={this.onRegisterPressed.bind(this) } style={styles.buttonContainer}>
           <Text style={styles.buttonText}>
             Registrarse
@@ -121,6 +193,7 @@ class Register extends React.Component {
           </Text>
         </TouchableHighlight>
       </KeyboardAvoidingView>
+      </ScrollView>
       </Image>
     );
   }
@@ -142,10 +215,10 @@ const styles = StyleSheet.create({
     paddingTop:20,
   },
   input: {
-    height:40,
+    //height:40,
     backgroundColor: 'rgba(255,255,255,0.2)',
     marginBottom: 10,
-    color: '#FFF',
+    //color: '#FFF',
     paddingHorizontal: 10
   },
   heading: {
@@ -171,14 +244,15 @@ const styles = StyleSheet.create({
   image:{
     flex: 1,
     width: ancho,
-    paddingTop:50,
     opacity: 0.7 // 0.8
   },
   logoContainer: {
     alignItems:'center',
     flexGrow: 1,
     //justifyContent:'center',
-    width: ancho
+    width: ancho,
+    paddingTop:10,
+    paddingBottom: 20
   },
   logo:{
     width: ancho,
