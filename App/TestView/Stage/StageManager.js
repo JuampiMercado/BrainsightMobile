@@ -227,7 +227,7 @@ export default class StageManager extends React.Component {
     console.log(element);
     let hasValue = true;
     if (element.type === 'Question'){
-      hasValue = (String(element.config.answer.value) != '');
+      hasValue = (element.config.answer.value != undefined && String(element.config.answer.value) != '');
     }
     return hasValue;
   }

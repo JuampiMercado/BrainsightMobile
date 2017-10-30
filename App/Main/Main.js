@@ -27,7 +27,7 @@ export default class Main extends React.Component {
     this._goToTest = this._goToTest.bind(this);
 
     // Use for testing and developing, enable to redo a test
-    AsyncStorage.removeItem('test-43');
+    AsyncStorage.removeItem('test-56');
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -50,10 +50,11 @@ export default class Main extends React.Component {
 
   componentWillMount() {
     Keyboard.dismiss();
-    var user = this._getUser();
-    this._fetchListOfTests(3, user.id);
-
+    this._getUser();
+    
   }
+
+  
 
   _refresh = () => {
     return new Promise((resolve) => {
@@ -71,6 +72,7 @@ export default class Main extends React.Component {
         this.props.navigation.setParams({
           user: JSON.parse(user)
         })
+        this._fetchListOfTests(3, JSON.parse(user).id);
         return JSON.parse(user);
       }
       else {
@@ -101,6 +103,8 @@ export default class Main extends React.Component {
     }
     else {
       var test = await this._fetchTest(id);
+      var isPublished = await this._isPublished(test);
+      if(!isPublished) return false;
       if (test && test != undefined) {
         this._goToTest(test);
       }
@@ -118,6 +122,17 @@ export default class Main extends React.Component {
 
   _existResult(testid) {
     return this._fetchResult(this.state.user.id, testid);
+  }
+  _isPublished(test){
+    if (!test.isPublished){
+      //El test ya no esta publicado, entonces lo elimino del storage, y no lo dejo ingresar
+      AsyncStorage.removeItem('test-' + test.id);
+      Alert.alert('No se puede acceder', 'El test no se encuentra disponible para su ejecución.',
+        [{ text: 'Continuar', onPress: () => this.props.navigation.navigate('Main') },],
+        { cancelable: false }
+      )
+    }
+    return test.isPublished;
   }
 
   _setCompletedProperty(test) {
@@ -137,6 +152,8 @@ export default class Main extends React.Component {
   }
 
   async _fetchListOfTests(intentos, userid) {
+    console.log('userid');
+    console.log(userid);
     if (intentos == 0) {
       this.setState({ error: 'No se han podido descargar test. Por favor, intentelo de nuevo más tarde.' })
       return;
@@ -149,7 +166,7 @@ export default class Main extends React.Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: userid
+          userid: userid
         }),
       });
       let res = await response.text();

@@ -27,7 +27,7 @@ export default class ScreenManager extends React.Component {
       accelerometer: { x: 0, y: 0, z: 0 },
       gyroscope: { x: 0, y: 0, z: 0 },
       stepCounter: 0,
-      enableContinue: false
+      enableContinue: this.props.navigation.state.params._shouldEnableContinue(params.currentScreen)
     }
 
   }
@@ -90,7 +90,7 @@ export default class ScreenManager extends React.Component {
       );
       
     } else {
-      this.setState({ currentScreen: this.state.currentScreen + 1, enableContinue: false });
+      this.setState({ currentScreen: this.state.currentScreen + 1, enableContinue: this.props.navigation.state.params._shouldEnableContinue(this.state.currentScreen + 1) });
       // this.props.navigation.navigate('ScreenManager',
       //   {
       //     user: this.state.user,
@@ -165,15 +165,11 @@ export default class ScreenManager extends React.Component {
   _SaveState(element, value) {
     this.props.navigation.state.params.SaveState(this.state.currentScreen, element, value);
     let enableContinue = this.props.navigation.state.params._shouldEnableContinue(this.state.currentScreen);
-    console.log('enableContinue');
-    console.log(enableContinue);
-    //this.setState({enableContinue: enableContinue})
     this._enableContinue(enableContinue);
     
   }
 
   render() {
-    
     const nextButton =  {
       backgroundColor: this.state.enableContinue ? '#000000' : '#A9A8A8' ,
       paddingVertical: 15,
