@@ -27,7 +27,7 @@ export default class Main extends React.Component {
     this._goToTest = this._goToTest.bind(this);
 
     // Use for testing and developing, enable to redo a test
-    AsyncStorage.removeItem('test-57');
+    AsyncStorage.removeItem('test-43');
   }
 
   static navigationOptions = ({ navigation }) => ({

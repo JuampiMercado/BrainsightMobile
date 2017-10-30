@@ -85,7 +85,7 @@ export default class ScreenManager extends React.Component {
       );
       
     } else {
-      this.setState({ currentScreen: this.state.currentScreen + 1 });
+      this.setState({ currentScreen: this.state.currentScreen + 1, enableContinue: false });
       // this.props.navigation.navigate('ScreenManager',
       //   {
       //     user: this.state.user,
@@ -156,16 +156,28 @@ export default class ScreenManager extends React.Component {
 
   _SaveState(element, value) {
     this.props.navigation.state.params.SaveState(this.state.currentScreen, element, value);
+    let enableContinue = this.props.navigation.state.params._shouldEnableContinue(this.state.currentScreen);
+    console.log('enableContinue');
+    console.log(enableContinue);
+    this.setState({enableContinue: enableContinue})
+    
   }
 
   render() {
+    
+    const nextButton =  {
+      backgroundColor: this.state.enableContinue ? '#000000' : '#A9A8A8' ,
+      paddingVertical: 15,
+      marginTop: 15,
+      padding: 15,
+    }
     return (
       <View style={styles.container}>
         <Screen screen={this.state.screens[this.state.currentScreen]} navigation={this.props.navigation} _SaveState={this._SaveState.bind(this)} />
         <View>
           <TouchableHighlight
-            disabled={this.state.enableContinue}
-            style={styles.nextButton} onPress={() => { this.GoTo() }} >
+            disabled={!this.state.enableContinue}
+            style={nextButton} onPress={() => { this.GoTo() }} >
             <Text style={styles.textButton}>Continuar</Text>
           </TouchableHighlight>
         </View>

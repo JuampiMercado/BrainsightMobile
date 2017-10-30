@@ -127,7 +127,7 @@ export default class StageManager extends React.Component {
           SetCompleteElement: this._SetCompleteElement.bind(this),
           PersistResults: this._PersistResults.bind(this),
           setSensorValue: this._setSensorValue.bind(this),
-          
+          _shouldEnableContinue: this._shouldEnableContinue.bind(this)
         }
       );
       this.setState({show: <Text>Cargando etapa {currentStage + 1}</Text>})
@@ -211,6 +211,25 @@ export default class StageManager extends React.Component {
     var stages = this.state.stages;
     stages[this.state.currentStage].screens[screen].elements[element].config.answer.value = value;
     this.setState({stages: stages});
+  }
+
+  _shouldEnableContinue(screen){
+    var elements = this.state.stages[this.state.currentStage].screens[screen].elements;
+    let enable = true && (elements.length > 0);
+    elements.forEach(function(element) {
+      enable = enable && this._hasValue(element);
+    }, this);
+    return enable;
+  }
+
+  _hasValue(element){
+    console.log('hasValue');
+    console.log(element);
+    let hasValue = true;
+    if (element.type === 'Question'){
+      hasValue = (String(element.config.answer.value) != '');
+    }
+    return hasValue;
   }
 
   _SetCompleteElement(iStage,iScreen){
