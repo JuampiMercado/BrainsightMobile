@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import { Text,View,StyleSheet,TouchableHighlight,AsyncStorage,Alert,ScrollView, Dimensions,ListView } from 'react-native';
+import React, { Component } from 'react';
+import { Text, View, StyleSheet, TouchableHighlight, AsyncStorage, Alert, ScrollView, Dimensions, ListView } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import MainHeader from './MainHeaderNav'
 import MainFooter from './MainFooterNav'
@@ -11,28 +11,29 @@ import DeepLinking from '../DeepLinking'
 const { height, width } = Dimensions.get('window');
 
 export default class Main extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     var linkID = true;
-    try {linkID = this.props.navigation.state.params.linkID;}
-    catch(err){}
+    try { linkID = this.props.navigation.state.params.linkID; }
+    catch (err) { }
     this.state = {
       testsList: [],
       user: null,
       error: "",
       refreshing: false,
       linkID: linkID,
-      dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+      dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
     }
     this._goToTest = this._goToTest.bind(this);
 
-    AsyncStorage.removeItem('test-24');
+    // Use for testing and developing, enable to redo a test
+    //AsyncStorage.removeItem('test-56');
   }
 
   static navigationOptions = ({ navigation }) => ({
     title: 'Bienvenido',
     headerLeft: null,
-    headerRight: ( <MainHeader navigation={navigation}/> ),
+    headerRight: (<MainHeader navigation={navigation} />),
     headerStyle: styles.mainHeader,
     headerTintColor: '#FFF',
   });
@@ -47,29 +48,29 @@ export default class Main extends React.Component {
     return false;
   }
 
-  componentWillMount(){
+  componentWillMount() {
     var user = this._getUser();
-    this._fetchListOfTests(3,user.id);
+    this._fetchListOfTests(3, user.id);
 
   }
 
-  _refresh= () => {
+  _refresh = () => {
     return new Promise((resolve) => {
-      this.setState({testsList: [], error: ""});
+      this.setState({ testsList: [], error: "" });
       this._fetchListOfTests(3, this.state.user.id);
-      setTimeout(()=>{resolve()}, 2000)
+      setTimeout(() => { resolve() }, 2000)
     });
   }
 
-  async _getUser(){
+  async _getUser() {
     try {
       let user = await AsyncStorage.getItem('user');
-      if (user != null && user != undefined && user != null){
-          this.setState({user: JSON.parse(user) }) ;
-          this.props.navigation.setParams({
-            user: JSON.parse(user)
-          })
-          return JSON.parse(user);
+      if (user != null && user != undefined && user != null) {
+        this.setState({ user: JSON.parse(user) });
+        this.props.navigation.setParams({
+          user: JSON.parse(user)
+        })
+        return JSON.parse(user);
       }
       else {
         this.props.navigation.navigate('Home');
@@ -79,64 +80,64 @@ export default class Main extends React.Component {
     }
   }
 
-  _goToTest(test){
+  _goToTest(test) {
     //Add completed property to stages and screens before execute test.
     test = this._setCompletedProperty(test);
     console.log('[_goToTest|Main]:')
     console.log(test);
-    if(test){
-      this.props.navigation.navigate('Test',{ test: test, user: this.state.user})
+    if (test) {
+      this.props.navigation.navigate('Test', { test: test, user: this.state.user })
     }
   }
 
-  async _getTest(id){
+  async _getTest(id) {
     var exists = await this._existResult(id);
-    if(exists){
-      Alert.alert('No se puede acceder','Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
-        [ {text: 'Continuar', onPress: () => this.setState({linkID: false})}, ],
+    if (exists) {
+      Alert.alert('No se puede acceder', 'Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
+        [{ text: 'Continuar', onPress: () => this.setState({ linkID: false }) },],
         { cancelable: false }
       )
     }
-    else{
+    else {
       var test = await this._fetchTest(id);
-      if(test && test != undefined){
+      if (test && test != undefined) {
         this._goToTest(test);
       }
     }
 
   }
 
-  async _linkToTest(id){
+  async _linkToTest(id) {
     //This function is calling by the component DeepLinking
     //I must manage redirection with linkID because it's entering on loop
-    if(this.state.linkID){
+    if (this.state.linkID) {
       this._getTest(id);
     }
   }
 
-  _existResult(testid){
-    return this._fetchResult(this.state.user.id,testid);
+  _existResult(testid) {
+    return this._fetchResult(this.state.user.id, testid);
   }
 
-  _setCompletedProperty(test){
-    if(test.data){
+  _setCompletedProperty(test) {
+    if (test.data) {
       test.data.map((stage, i) => {
         stage.completed = false;
-        stage.screens.map((screen,j) =>{
+        stage.screens.map((screen, j) => {
           screen.completed = false;
         });
       });
       return test;
     }
-    else{
-      Alert.alert('Error en el test','El test tiene un error y no puede iniciarse.')
+    else {
+      Alert.alert('Error en el test', 'El test tiene un error y no puede iniciarse.')
       return null;
     }
   }
 
-  async _fetchListOfTests(intentos,userid) {
-    if (intentos == 0){
-      this.setState({error: 'No se han podido descargar test. Por favor, intentelo de nuevo más tarde.'})
+  async _fetchListOfTests(intentos, userid) {
+    if (intentos == 0) {
+      this.setState({ error: 'No se han podido descargar test. Por favor, intentelo de nuevo más tarde.' })
       return;
     }
     try {
@@ -147,23 +148,23 @@ export default class Main extends React.Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            id: userid
-          }),
-        });
+          id: userid
+        }),
+      });
       let res = await response.text();
       if (response.status >= 200 && response.status < 300) {
-        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        this.setState({testsList: JSON.parse(res), dataSource: ds.cloneWithRows(JSON.parse(res))});
+        const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
+        this.setState({ testsList: JSON.parse(res), dataSource: ds.cloneWithRows(JSON.parse(res)) });
       } else {
-          let error = res;
-          throw error;
+        let error = res;
+        throw error;
       }
-    } catch(error) {
-        this._fetchListOfTests(intentos-1,userid);
+    } catch (error) {
+      this._fetchListOfTests(intentos - 1, userid);
     }
   }
 
-  async _fetchTest(id){
+  async _fetchTest(id) {
     try {
       let response = await fetch(RailsApi('test'), {
         method: 'post',
@@ -172,24 +173,24 @@ export default class Main extends React.Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            id: id
-          }),
-        });
+          id: id
+        }),
+      });
 
       let res = await response.text();
       if (response.status >= 200 && response.status < 300) {
-          return JSON.parse(res);
+        return JSON.parse(res);
       } else {
-          let error = res;
-          Alert.alert(error,'El test puede que no este disponible en este momento.');
-          return null;
+        let error = res;
+        Alert.alert(error, 'El test puede que no este disponible en este momento.');
+        return null;
       }
-    } catch(error) {
-        console.log('[_fetchTest|Main]:' + error);
+    } catch (error) {
+      console.log('[_fetchTest|Main]:' + error);
     }
   }
 
-  async _fetchResult(userid, testid){
+  async _fetchResult(userid, testid) {
     var exists = true;
     try {
       let response = await fetch(RailsApi('existResult'), {
@@ -199,25 +200,25 @@ export default class Main extends React.Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            user_id: userid,
-            test_id: testid
-          }),
-        });
+          user_id: userid,
+          test_id: testid
+        }),
+      });
 
       let res = await response.text();
       if (response.status >= 200 && response.status < 300) {
-          exists = res == "true";
+        exists = res == "true";
       } else {
-          let error = res;
-          throw error;
+        let error = res;
+        throw error;
       }
-    } catch(error) {
-        Alert.alert(
+    } catch (error) {
+      Alert.alert(
         'Error',
         'Se ha producido un error, por favor, intentelo nuevamente mas tarde',
         [
           //{text: 'Continuar', onPress: () => this.props.navigation.navigate('Main',{linkID: false})},
-         {text: 'Continuar', onPress: () => this.setState({linkID: false})},
+          { text: 'Continuar', onPress: () => this.setState({ linkID: false }) },
 
         ],
         { cancelable: false }
@@ -229,76 +230,76 @@ export default class Main extends React.Component {
   }
 
 
-  render(){
-    return(
-        <View style={styles.container}>
-          <DeepLinking linkToTest={this._linkToTest.bind(this)} />
-          <BackHandlerAndroid />
-          <PTRView onRefresh={this._refresh} >
-            <ScrollView style={styles.main}>
-              <View style={styles.titleContainer}>
-                  <Text style={styles.title}>Seleccione un test</Text>
-              </View>
-              <Text style={styles.error}>
-                {this.state.error}
-              </Text>
+  render() {
+    return (
+      <View style={styles.container}>
+        <DeepLinking linkToTest={this._linkToTest.bind(this)} />
+        <BackHandlerAndroid />
+        <PTRView onRefresh={this._refresh} >
+          <ScrollView style={styles.main}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.title}>Seleccione un test</Text>
+            </View>
+            <Text style={styles.error}>
+              {this.state.error}
+            </Text>
 
-              <ListView style={styles.listView}
-                dataSource={this.state.dataSource}
-                renderRow={(test) =>
-                  <View style={styles.testContainer} key={test.id}>
-                    <TouchableHighlight style={styles.testButton}
-                      onPress={ () => { this._getTest(test.id) } }
-                      >
-                      <Text style={styles.textButton}>{test.name} </Text>
-                    </TouchableHighlight>
-                  </View>
-                }
-              />
-            </ScrollView>
-          </PTRView>
+            <ListView style={styles.listView}
+              dataSource={this.state.dataSource}
+              renderRow={(test) =>
+                <View style={styles.testContainer} key={test.id}>
+                  <TouchableHighlight style={styles.testButton}
+                    onPress={() => { this._getTest(test.id) }}
+                  >
+                    <Text style={styles.textButton}>{test.name} </Text>
+                  </TouchableHighlight>
+                </View>
+              }
+            />
+          </ScrollView>
+        </PTRView>
 
-          <View style={styles.bottomNav}>
-            <MainFooter navigation={this.props.navigation} _getTest={this._getTest.bind(this)} />
-          </View>
+        <View style={styles.bottomNav}>
+          <MainFooter navigation={this.props.navigation} _getTest={this._getTest.bind(this)} />
         </View>
+      </View>
     );
   }
 }
 
 
 
-const styles= StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF',
   },
   mainHeader: {
-     backgroundColor: '#000000',
+    backgroundColor: '#000000',
   },
-  main:{
+  main: {
     marginBottom: 65,
   },
-  titleContainer:{
+  titleContainer: {
     borderColor: '#000000',
     borderBottomWidth: 1,
     margin: 10
   },
-  title:{
+  title: {
     fontWeight: 'bold',
     fontSize: 15
   },
-  testContainer:{
-     marginLeft: 10,
-     marginRight: 10
+  testContainer: {
+    marginLeft: 10,
+    marginRight: 10
   },
-  testButton:{
-    backgroundColor:'#000000',
+  testButton: {
+    backgroundColor: '#000000',
     paddingVertical: 15,
     marginTop: 15,
     padding: 15,
   },
-  textButton:{
+  textButton: {
     textAlign: 'left',
     fontWeight: 'bold',
     color: '#FFF'
@@ -309,10 +310,10 @@ const styles= StyleSheet.create({
     marginLeft: 10,
     marginRight: 10
   },
-  bottomNav:{
-    backgroundColor:'#000000',
+  bottomNav: {
+    backgroundColor: '#000000',
     position: 'absolute',
-    bottom:0,
+    bottom: 0,
     height: 40,
   }
 })
