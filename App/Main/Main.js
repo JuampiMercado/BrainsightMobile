@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, TouchableHighlight, AsyncStorage, Alert, ScrollView, Dimensions, ListView } from 'react-native';
+import { Text, View, StyleSheet, TouchableHighlight, AsyncStorage, Alert, ScrollView, Dimensions, ListView, Keyboard } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import MainHeader from './MainHeaderNav'
 import MainFooter from './MainFooterNav'
@@ -49,6 +49,7 @@ export default class Main extends React.Component {
   }
 
   componentWillMount() {
+    Keyboard.dismiss();
     var user = this._getUser();
     this._fetchListOfTests(3, user.id);
 

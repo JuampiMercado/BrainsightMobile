@@ -50,6 +50,11 @@ export default class ScreenManager extends React.Component {
     headerTintColor: '#FFF',
   });
 
+  componentWillMount(){
+    this.props.navigation.setParams({
+      _enableContinue: this._enableContinue.bind(this)
+    });
+  }
   componentDidMount() {
     Keyboard.dismiss();
     this._startSensors();
@@ -153,13 +158,17 @@ export default class ScreenManager extends React.Component {
     this.props.navigation.state.params.setSensorValue(this.state.currentScreen, sensors);
   }
 
+  _enableContinue(state){
+    this.setState({enableContinue: state});
+  }
 
   _SaveState(element, value) {
     this.props.navigation.state.params.SaveState(this.state.currentScreen, element, value);
     let enableContinue = this.props.navigation.state.params._shouldEnableContinue(this.state.currentScreen);
     console.log('enableContinue');
     console.log(enableContinue);
-    this.setState({enableContinue: enableContinue})
+    //this.setState({enableContinue: enableContinue})
+    this._enableContinue(enableContinue);
     
   }
 
