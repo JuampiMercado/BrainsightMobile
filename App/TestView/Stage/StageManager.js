@@ -126,7 +126,8 @@ export default class StageManager extends React.Component {
           SaveAsyncStorage: this._SaveAsyncStorage.bind(this),
           SetCompleteElement: this._SetCompleteElement.bind(this),
           PersistResults: this._PersistResults.bind(this),
-          setSensorValue: this._setSensorValue.bind(this)
+          setSensorValue: this._setSensorValue.bind(this),
+          
         }
       );
       this.setState({show: <Text>Cargando etapa {currentStage + 1}</Text>})
@@ -135,7 +136,10 @@ export default class StageManager extends React.Component {
       //No more stages
       this.setState({show: <View><Text>Gracias por colaborar</Text><TouchableHighlight style={styles.nextButton} onPress={ () => { this._PersistResults(1); } }><Text style={styles.textButton}>Enviar respuesta</Text></TouchableHighlight></View>});
     }
+    
   }
+  
+
 
   _getIndex(value, arr, prop) {
     for(var i = 0; i < arr.length; i++) {
@@ -189,6 +193,9 @@ export default class StageManager extends React.Component {
     )
 
   }
+
+  
+  
 
   _setSensorValue(screen,sensors){
     var stages = this.state.stages;
@@ -248,6 +255,8 @@ export default class StageManager extends React.Component {
     console.log(result);
     this._FetchResult(result,state);
   }
+
+  
 
   render(){
     return(

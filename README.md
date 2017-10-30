@@ -31,3 +31,6 @@ https://www.npmjs.com/package/react-native-sensor-manager
 #Push Notifications
 https://github.com/zo0r/react-native-push-notification
 npm install --save react-native-push-notification
+
+#DatePicker
+npm install react-native-datepicker --save

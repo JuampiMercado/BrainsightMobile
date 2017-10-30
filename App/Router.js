@@ -2,6 +2,7 @@ import React from 'react';
 import { AppRegistry,  } from 'react-native';
 import { StackNavigator  } from 'react-navigation';
 
+
 import Root from './Root'
 import Home from './Home/Home'
 import Register from './Home/Register'
@@ -27,8 +28,5 @@ const Router = StackNavigator({
   VideoPlayerView: { screen: VideoPlayerView},
   Pending: {screen: Pending}
 },{initialRouteName: 'Root'});
-
-
-
 
 export default Router;

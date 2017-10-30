@@ -14,9 +14,9 @@ export default class ScreenHeaderNav extends React.Component {
   }
 
   render() {
-    const element = null;
+    let element = null;
     const position = this.props.position || 'right';
-    switch (this.state.position) {
+    switch (position) {
       case 'left':
         element = <ScreenLeftNav {...this.props} position={position} _stopSensors={this._stopSensors.bind(this)} />
         break;

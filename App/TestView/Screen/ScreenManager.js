@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableHighlight, Text, TextInput, StyleSheet, AsyncStorage, DeviceEventEmitter, NativeModules, Keyboard } from 'react-native';
 import ScreenHeaderNav from './ScreenHeaderNav'
-import { StackNavigator } from 'react-navigation';
+import { StackNavigator,NavigationActions } from 'react-navigation';
 import Screen from './Screen';
 import { SensorManager } from 'NativeModules';
 
@@ -63,6 +63,7 @@ export default class ScreenManager extends React.Component {
     DeviceEventEmitter.removeListener('StepCounter');
   }
 
+  
   GoTo() {
 
     this._setSensorValue();
@@ -82,6 +83,7 @@ export default class ScreenManager extends React.Component {
           currentStage: this.state.currentStage + 1
         }
       );
+      
     } else {
       this.setState({ currentScreen: this.state.currentScreen + 1 });
       // this.props.navigation.navigate('ScreenManager',
