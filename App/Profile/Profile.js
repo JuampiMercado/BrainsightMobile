@@ -72,9 +72,14 @@ export default class Profile extends React.Component {
             { cancelable: false }
           )
       } else {
+        if( response.status == 400){
+          this.setState({errors: [res]})
+        }
+        else{
           //Handle error
           let error = res;
           throw error;
+        }
       }
     } catch(errors) {
       //errors are in JSON form so we must parse them first.

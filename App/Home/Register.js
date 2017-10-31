@@ -69,12 +69,22 @@ class Register extends React.Component {
           //On success we will store the access_token in the AsyncStorage
           this.SaveUser(user);
           this.props.navigation.navigate("Main");
-      } else {
+      }
+      else {
+        if( response.status == 400){
+          this.setState({errors: [res]})
+          this.setState({showProgress: false});
+        }
+        else{
           //Handle error
           let error = res;
+          console.log(error);
           throw error;
+        }
       }
-    } catch(errors) {
+    }
+    catch(errors) {
+      console.log(errors);
       //errors are in JSON form so we must parse them first.
       let formErrors = JSON.parse(errors);
 
