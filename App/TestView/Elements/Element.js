@@ -10,7 +10,7 @@ export default class Element extends React.Component {
   render() {
     var element = '';
     switch (this.props.type) {
-      case 'RTETitle'://Title y Paragraph
+      case 'RTEHeading'://Title y Paragraph
         element = (<TestText id={this.props.id} {...this.props.config} />);
         break;
       case 'Question':

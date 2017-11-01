@@ -2,7 +2,8 @@ import React from 'react';
 import {Text,View,TouchableHighlight, StyleSheet, AsyncStorage,Alert } from 'react-native';
 import RailsApi from '../../Config';
 import { StackNavigator } from 'react-navigation';
-//import { PushNotification  } from 'react-native-push-notification';
+import Loading from '../../Handlers/Loading'
+
 
 var PushNotification = require('react-native-push-notification');
 export default class StageManager extends React.Component {
@@ -18,8 +19,10 @@ export default class StageManager extends React.Component {
       currentStage: params.currentStage,
       lastStage: params.stages.length - 1 //Final stage
       ,show: null
+      ,loading: false
     }
     this._setNotification = this._setNotification.bind(this);
+    
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -88,7 +91,12 @@ export default class StageManager extends React.Component {
     });
 
   }
+
   componentWillMount(){
+    this._ShowLoading();
+    
+  }
+  componentDidMount(){
     /*Checking if are stages complete*/
     var currentStage = this.state.currentStage;
     var stageIndex = this._getIndex(false, this.state.stages, 'completed' )
@@ -112,7 +120,7 @@ export default class StageManager extends React.Component {
       var screenIndex = this._getIndex(false, this.state.stages[currentStage].screens, 'completed' )
       if (this.state.currentScreen != 0) currentScreen = screenIndex;
       /*End of checking*/
-
+      
       this.props.navigation.navigate('ScreenManager',
         {
           user: this.state.user,
@@ -130,16 +138,16 @@ export default class StageManager extends React.Component {
           _shouldEnableContinue: this._shouldEnableContinue.bind(this)
         }
       );
-      this.setState({show: <Text>Cargando etapa {currentStage + 1}</Text>})
+      //this.setState({loading: <Text>Cargando etapa {currentStage + 1}</Text>})
+      
     }
     else{
       //No more stages
       this.setState({show: <View><Text>Gracias por colaborar</Text><TouchableHighlight style={styles.nextButton} onPress={ () => { this._PersistResults(1); } }><Text style={styles.textButton}>Enviar respuesta</Text></TouchableHighlight></View>});
     }
-    
+    this.setState({loading: false});
   }
   
-
 
   _getIndex(value, arr, prop) {
     for(var i = 0; i < arr.length; i++) {
@@ -275,15 +283,22 @@ export default class StageManager extends React.Component {
     this._FetchResult(result,state);
   }
 
-  
+  _ShowLoading(){
+    this.setState({loading: true});
+    setTimeout(() => { this.setState({loading: false}) }, 1000)
+  }
 
   render(){
-    return(
-      <View style={styles.container}>
-        {this.state.show}
+    if(this.state.loading)
+      return <Loading visible={this.state.loading} modal={false}/>
+    else
+      return(
         
-      </View>
-    );
+        <View style={styles.container}>
+          {this.state.show}
+        </View>
+        
+      );
   }
 }
 

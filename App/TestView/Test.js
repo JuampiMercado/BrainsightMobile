@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableHighlight, StyleSheet, AsyncStorage, Alert } from 'react-native';
+import {ScrollView, Text, TouchableHighlight, StyleSheet, AsyncStorage, Alert  } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import RailsApi from '../Config';
 
@@ -47,13 +47,13 @@ export default class Test extends React.Component {
     const { navigate } = this.props.navigation;
     console.log(this.state.test);
     return (
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         <TouchableHighlight style={styles.testButton}
           onPress={() => { navigate('StageManager', { user: this.state.user, test: this.state.test, stages: this.state.test.data, currentStage: 0 }) }}
         >
           <Text style={styles.textButton}>¡Empezar! </Text>
         </TouchableHighlight>
-      </View>
+      </ScrollView>
     );
   }
 }

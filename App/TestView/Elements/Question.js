@@ -211,6 +211,7 @@ class Likert extends React.Component {
     const roundTo = require('round-to');
     return (
       <View style={styles.likert}>
+      <Text>Valor: {this.state.value}</Text>
         <Slider
           thumbTintColor='#F79B08'
           value={this.state.value}
@@ -224,7 +225,11 @@ class Likert extends React.Component {
             }
           }
         />
-        <Text>Valor: {this.state.value}</Text>
+        <View>
+        <Text style={styles.likertBottom}>{this.props.answer.bottomLabel}</Text>
+        <Text style={styles.likertTop}>{this.props.answer.topLabel}</Text>
+        </View>
+        
       </View>
     );
   }
@@ -247,5 +252,14 @@ const styles = StyleSheet.create({
   },
   likert: {
     marginTop: 40
+  },
+  liketBottom:{
+    position:'absolute',
+    left: 0
+  },
+  likertTop:{
+    position:'absolute',
+    right: 0
+
   }
 })

@@ -34,3 +34,6 @@ npm install --save react-native-push-notification
 
 #DatePicker
 npm install react-native-datepicker --save
+
+#Loading Spinner
+npm install react-native-smart-loading-spinner-overlay --save

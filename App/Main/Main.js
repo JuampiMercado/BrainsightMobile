@@ -7,6 +7,8 @@ import RailsApi from '../Config';
 import PTRView from 'react-native-pull-to-refresh';
 import BackHandlerAndroid from '../Handlers/BackHandlerAndroid'
 import DeepLinking from '../DeepLinking'
+import Loading from '../Handlers/Loading'
+
 
 const { height, width } = Dimensions.get('window');
 
@@ -23,11 +25,12 @@ export default class Main extends React.Component {
       refreshing: false,
       linkID: linkID,
       dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
+      loading: false
     }
     this._goToTest = this._goToTest.bind(this);
 
     // Use for testing and developing, enable to redo a test
-    //AsyncStorage.removeItem('test-56');
+    //AsyncStorage.removeItem('test-62');
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -50,8 +53,14 @@ export default class Main extends React.Component {
 
   componentWillMount() {
     Keyboard.dismiss();
+    this._ShowLoading();  
     this._getUser();
-    
+  }
+
+
+  _ShowLoading(){
+    this.setState({loading: true});
+    setTimeout(() => { this.setState({loading: false}) }, 1000)
   }
 
   
@@ -109,7 +118,6 @@ export default class Main extends React.Component {
         this._goToTest(test);
       }
     }
-
   }
 
   async _linkToTest(id) {
@@ -177,6 +185,7 @@ export default class Main extends React.Component {
         let error = res;
         throw error;
       }
+      
     } catch (error) {
       this._fetchListOfTests(intentos - 1, userid);
     }
@@ -211,6 +220,7 @@ export default class Main extends React.Component {
   async _fetchResult(userid, testid) {
     var exists = true;
     try {
+      
       let response = await fetch(RailsApi('existResult'), {
         method: 'post',
         headers: {
@@ -253,6 +263,7 @@ export default class Main extends React.Component {
       <View style={styles.container}>
         <DeepLinking linkToTest={this._linkToTest.bind(this)} />
         <BackHandlerAndroid />
+        <Loading visible={this.state.loading} />
         <PTRView onRefresh={this._refresh} >
           <ScrollView style={styles.main}>
             <View style={styles.titleContainer}>
@@ -261,7 +272,6 @@ export default class Main extends React.Component {
             <Text style={styles.error}>
               {this.state.error}
             </Text>
-
             <ListView style={styles.listView}
               dataSource={this.state.dataSource}
               renderRow={(test) =>
