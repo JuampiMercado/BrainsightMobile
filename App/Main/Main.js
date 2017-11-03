@@ -49,6 +49,8 @@ export default class Main extends React.Component {
     if (this.state.user !== nextState.user) {
       return true;
     }
+    if(this.state.linkID !== nextState.linkID)
+      return true
     return false;
   }
 
@@ -107,7 +109,7 @@ export default class Main extends React.Component {
     var exists = await this._existResult(id);
     if (exists) {
       Alert.alert('No se puede acceder', 'Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
-        [{ text: 'Continuar', onPress: () => this.setState({ linkID: false }) },],
+        [{ text: 'Continuar', onPress: () => { AsyncStorage.removeItem('test-' + id); this.setState({ linkID: false })} },],
         { cancelable: false }
       )
     }
