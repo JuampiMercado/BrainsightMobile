@@ -7,6 +7,7 @@ import { SensorManager } from 'NativeModules';
 
 
 
+
 export default class ScreenManager extends React.Component {
 
   constructor(props) {
@@ -51,6 +52,7 @@ export default class ScreenManager extends React.Component {
   });
 
   componentWillMount(){
+    this.sensors
     this.props.navigation.setParams({
       _enableContinue: this._enableContinue.bind(this)
     });
@@ -60,6 +62,7 @@ export default class ScreenManager extends React.Component {
     this._startSensors();
   }
 
+
   componentWillUnmount() {
     DeviceEventEmitter.removeListener('Accelerometer');
     DeviceEventEmitter.removeListener('LightSensor');
@@ -68,18 +71,18 @@ export default class ScreenManager extends React.Component {
     DeviceEventEmitter.removeListener('StepCounter');
   }
 
-  
+
   GoTo() {
 
     this._setSensorValue();
-    this._stopSensors();
     if (this.state.currentScreen == this.state.lastScreen) {
       this.props.navigation.state.params.SetCompleteElement(this.state.currentStage);
     }
     this.props.navigation.state.params.SetCompleteElement(this.state.currentStage, this.state.currentScreen);
     this.props.navigation.state.params.SaveAsyncStorage(this.state.test.id);
     if (this.state.currentScreen == this.state.lastScreen) {
-      //Si es la ultima pantalla, mando al StageManager
+      //Si es la ultima pantalla, mando al StageManager y detengo los sensores
+      this._stopSensors();
       this.props.navigation.navigate('StageManager',
         {
           user: this.state.user,
@@ -88,9 +91,18 @@ export default class ScreenManager extends React.Component {
           currentStage: this.state.currentStage + 1
         }
       );
-      
+
     } else {
-      this.setState({ currentScreen: this.state.currentScreen + 1, enableContinue: this.props.navigation.state.params._shouldEnableContinue(this.state.currentScreen + 1) });
+      const sensors = {
+        reaction: { begin: new Date(), end: null, difference: 0 },
+        thermometer: 0,
+        light: 0,
+        accelerometer: { x: 0, y: 0, z: 0 },
+        gyroscope: { x: 0, y: 0, z: 0 },
+        stepCounter: 0,
+      }
+
+      this.setState({ currentScreen: this.state.currentScreen + 1, enableContinue: this.props.navigation.state.params._shouldEnableContinue(this.state.currentScreen + 1), ...sensors });
       // this.props.navigation.navigate('ScreenManager',
       //   {
       //     user: this.state.user,
@@ -121,6 +133,7 @@ export default class ScreenManager extends React.Component {
     SensorManager.startGyroscope(800);
     SensorManager.startAccelerometer(800);
     SensorManager.startStepCounter(1000);
+
   }
 
   _bindSensorsEvent() {
@@ -153,7 +166,8 @@ export default class ScreenManager extends React.Component {
     var reaction = this.state.reaction;
     var now = new Date();
     reaction.end = now;
-    reaction.difference = now - reaction.begin;
+    debugger;
+    reaction.difference = Number(now - reaction.begin)/1000;
     var sensors = { reaction: reaction, accelerometer: this.state.accelerometer, thermometer: this.state.thermometer, light: this.state.light, gyroscope: this.state.gyroscope, stepCounter: this.state.stepCounter }
     this.props.navigation.state.params.setSensorValue(this.state.currentScreen, sensors);
   }
@@ -166,7 +180,7 @@ export default class ScreenManager extends React.Component {
     this.props.navigation.state.params.SaveState(this.state.currentScreen, element, value);
     let enableContinue = this.props.navigation.state.params._shouldEnableContinue(this.state.currentScreen);
     this._enableContinue(enableContinue);
-    
+
   }
 
   render() {

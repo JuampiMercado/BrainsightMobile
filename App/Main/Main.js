@@ -21,7 +21,8 @@ export default class Main extends React.Component {
     this.state = {
       testsList: [],
       user: null,
-      error: "",
+      error: null,
+      show: null,
       refreshing: false,
       linkID: linkID,
       dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
@@ -53,17 +54,17 @@ export default class Main extends React.Component {
 
   componentWillMount() {
     Keyboard.dismiss();
-    this._ShowLoading();  
     this._getUser();
+    this._ShowLoading();
   }
 
 
   _ShowLoading(){
     this.setState({loading: true});
-    setTimeout(() => { this.setState({loading: false}) }, 1000)
+    setTimeout(() => { this.setState({loading: false}) }, 200)
   }
 
-  
+
 
   _refresh = () => {
     return new Promise((resolve) => {
@@ -180,12 +181,13 @@ export default class Main extends React.Component {
       let res = await response.text();
       if (response.status >= 200 && response.status < 300) {
         const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-        this.setState({ testsList: JSON.parse(res), dataSource: ds.cloneWithRows(JSON.parse(res)) });
+        const show = JSON.parse(res).length == 0 ? "No hay test disponibles" : null;
+        this.setState({ testsList: JSON.parse(res), dataSource: ds.cloneWithRows(JSON.parse(res)), show: show });
       } else {
         let error = res;
         throw error;
       }
-      
+
     } catch (error) {
       this._fetchListOfTests(intentos - 1, userid);
     }
@@ -220,7 +222,7 @@ export default class Main extends React.Component {
   async _fetchResult(userid, testid) {
     var exists = true;
     try {
-      
+
       let response = await fetch(RailsApi('existResult'), {
         method: 'post',
         headers: {
@@ -259,6 +261,8 @@ export default class Main extends React.Component {
 
 
   render() {
+    const msgToShow =  (this.state.error ? this.state.error : this.state.show);
+    const msgStyle = (this.state.error ? styles.error : styles.message)
     return (
       <View style={styles.container}>
         <DeepLinking linkToTest={this._linkToTest.bind(this)} />
@@ -269,8 +273,8 @@ export default class Main extends React.Component {
             <View style={styles.titleContainer}>
               <Text style={styles.title}>Seleccione un test</Text>
             </View>
-            <Text style={styles.error}>
-              {this.state.error}
+            <Text style={msgStyle}>
+              {msgToShow}
             </Text>
             <ListView style={styles.listView}
               dataSource={this.state.dataSource}
@@ -283,12 +287,13 @@ export default class Main extends React.Component {
                   </TouchableHighlight>
                 </View>
               }
+              enableEmptySections={true}
             />
           </ScrollView>
         </PTRView>
 
         <View style={styles.bottomNav}>
-          <MainFooter navigation={this.props.navigation} _getTest={this._getTest.bind(this)} />
+          <MainFooter navigation={this.props.navigation} _getTest={this._getTest.bind(this)} user={this.state.user} />
         </View>
       </View>
     );
@@ -343,6 +348,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     height: 40,
+  },
+  message:{
+    color: '#0D739C',
+    margin: 10,
+    fontWeight: 'bold',
+    fontSize: 15
   }
 })
 

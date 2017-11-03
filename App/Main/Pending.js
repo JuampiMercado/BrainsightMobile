@@ -10,11 +10,14 @@ const { width, height } = Dimensions.get('window');
 export default class Pending extends React.Component {
   constructor(props){
     super(props);
+    console.log(this.props.navigation);
     this.state = {
       testList: [],
       user: this.props.navigation.state.params.user,
       dataSource: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}),
+      show: null
     }
+
     this._getStorageTest();
     this._goToTest = this._goToTest.bind(this);
   }
@@ -26,6 +29,12 @@ export default class Pending extends React.Component {
     headerStyle: styles.mainHeader,
     headerTintColor: '#FFF',
   });
+
+  componentDidMount(){
+    this.props.navigation.setParams({
+      user: this.props.navigation.state.params.user
+    })
+  }
 
 
 
@@ -39,7 +48,9 @@ export default class Pending extends React.Component {
       }
     }
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.setState({testsList: list, dataSource: ds.cloneWithRows(list)});
+    const show = list.length == 0 ? "No hay test pendientes para mostrar" : null;
+    //const show ="No hay test pendientes para mostrar"
+    this.setState({testsList: list, dataSource: ds.cloneWithRows(list), show: show});
     //this.setState({testList: list});
   }
 
@@ -51,14 +62,15 @@ export default class Pending extends React.Component {
   render(){
     return(
       <View style={styles.container}>
-        <ScrollView style={styles.main}> 
+        <ScrollView style={styles.main}>
           <View style={styles.titleContainer}>
               <Text style={styles.title}>Los siguientes test no fueron terminados o no han sincronizado sus resultados</Text>
           </View>
+          <Text style={styles.emptyMessage}>{this.state.show}</Text>
           <ListView style={styles.listView}
             dataSource={this.state.dataSource}
             enableEmptySections={true}
-            renderRow={(test) => 
+            renderRow={(test) =>
               <View style={styles.testContainer} key={test.id}>
                 <TouchableHighlight style={styles.testButton}
                   onPress={ () => { this._goToTest(test.id) } }
@@ -132,5 +144,11 @@ const styles= StyleSheet.create({
     position: 'absolute',
     bottom:0,
     height: 40,
+  },
+  emptyMessage:{
+    color: '#0D739C',
+    margin: 10,
+    fontWeight: 'bold',
+    fontSize: 15
   }
 });

@@ -22,7 +22,7 @@ export default class StageManager extends React.Component {
       ,loading: false
     }
     this._setNotification = this._setNotification.bind(this);
-    
+
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -60,11 +60,11 @@ export default class StageManager extends React.Component {
     var to = this.state.stages[stage].config.to;
     Alert.alert('¡Atención!','Esta estapa debe ser realizada entre las ' + from + ' y '+ to + '. Será redirigido al menú principal.',
     [
-      {text: 'Continuar', 
+      {text: 'Continuar',
       onPress: () => {
-        this._setNotification(from); 
+        this._setNotification(from);
         this.props.navigation.navigate('Main', {user: this.state.user, linkID: false});
-    
+
       }},
     ],
     { cancelable: false }
@@ -94,7 +94,7 @@ export default class StageManager extends React.Component {
 
   componentWillMount(){
     this._ShowLoading();
-    
+
   }
   componentDidMount(){
     /*Checking if are stages complete*/
@@ -120,7 +120,7 @@ export default class StageManager extends React.Component {
       var screenIndex = this._getIndex(false, this.state.stages[currentStage].screens, 'completed' )
       if (this.state.currentScreen != 0) currentScreen = screenIndex;
       /*End of checking*/
-      
+
       this.props.navigation.navigate('ScreenManager',
         {
           user: this.state.user,
@@ -139,7 +139,7 @@ export default class StageManager extends React.Component {
         }
       );
       //this.setState({loading: <Text>Cargando etapa {currentStage + 1}</Text>})
-      
+
     }
     else{
       //No more stages
@@ -147,7 +147,7 @@ export default class StageManager extends React.Component {
     }
     this.setState({loading: false});
   }
-  
+
 
   _getIndex(value, arr, prop) {
     for(var i = 0; i < arr.length; i++) {
@@ -202,8 +202,8 @@ export default class StageManager extends React.Component {
 
   }
 
-  
-  
+
+
 
   _setSensorValue(screen,sensors){
     var stages = this.state.stages;
@@ -223,7 +223,7 @@ export default class StageManager extends React.Component {
 
   _shouldEnableContinue(screen){
     var elements = this.state.stages[this.state.currentStage].screens[screen].elements;
-    let enable = true && (elements.length > 0);
+    let enable = true;// && (elements.length > 0); Saco la condicion de que la pantalla tenga elementos, porque si no los tiene, no deja avanzar en el test
     elements.forEach(function(element) {
       enable = enable && this._hasValue(element);
     }, this);
@@ -293,11 +293,11 @@ export default class StageManager extends React.Component {
       return <Loading visible={this.state.loading} modal={false}/>
     else
       return(
-        
+
         <View style={styles.container}>
           {this.state.show}
         </View>
-        
+
       );
   }
 }
