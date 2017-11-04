@@ -5,8 +5,13 @@ const path = 'https://brainsight-web.herokuapp.com';
 
 export default class TestImage extends React.Component {
   render() {
+    const url = 'http://' + String(this.props.contentImage).substr(2,this.props.contentImage.length);
     return (
-      <Image source={{ uri: path + this.props.contentImage }} style={styles.image}></Image>
+      //<Image source={{ uri: path + this.props.contentImage }} style={styles.image}></Image>
+      <View>
+        <Image source={{ uri: url }} style={styles.image}></Image>
+      </View>
+      
     );
   }
 }
@@ -14,7 +19,10 @@ export default class TestImage extends React.Component {
 const styles = StyleSheet.create({
   image: {
     paddingTop: 20,
-    height: Dimensions.get('window').height * 0.4,
+    height: Dimensions.get('window').height * 0.38,
+    /*width: Dimensions.get('window').width - 20,*/
+    //height:50, width: 50,
+    borderWidth:1,
     resizeMode: 'contain',
   }
 })
