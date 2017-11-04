@@ -29,10 +29,11 @@ export default class DeepLinking extends React.Component {
 
   push = (url) => {
     if(url && url != undefined){
-      var scheme = 'https://';
-      if(url.indexOf('http') != -1)
-        scheme = 'http://';
-      const pathname = url.replace(scheme + prefix, '');
+      var scheme = 'http://';
+      if(url.indexOf('https') != -1)
+        scheme = 'https://';
+      const sRepl = scheme + prefix;
+      var pathname = url.replace(sRepl, '');
       this.props.linkToTest(pathname);
     }
   }

@@ -48,6 +48,7 @@ export default class Test extends React.Component {
     console.log(this.state.test);
     return (
       <ScrollView style={styles.container}>
+        <Text>{this.state.test.description}</Text>
         <TouchableHighlight style={styles.testButton}
           onPress={() => { navigate('StageManager', { user: this.state.user, test: this.state.test, stages: this.state.test.data, currentStage: 0 }) }}
         >
