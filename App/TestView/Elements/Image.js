@@ -20,8 +20,6 @@ const styles = StyleSheet.create({
   image: {
     paddingTop: 20,
     height: Dimensions.get('window').height * 0.38,
-    /*width: Dimensions.get('window').width - 20,*/
-    //height:50, width: 50,
     borderWidth:1,
     resizeMode: 'contain',
   }
