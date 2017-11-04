@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, TouchableHighlight, AsyncStorage, Alert, ScrollView, Dimensions, ListView, Keyboard } from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import MainHeader from './MainHeaderNav'
-import MainFooter from './MainFooterNav'
+import MainHeader from './MainHeaderNav';
+import MainFooter from './MainFooterNav';
 import RailsApi from '../Config';
 import PTRView from 'react-native-pull-to-refresh';
-import BackHandlerAndroid from '../Handlers/BackHandlerAndroid'
-import DeepLinking from '../DeepLinking'
-import Loading from '../Handlers/Loading'
-
+import BackHandlerAndroid from '../Handlers/BackHandlerAndroid';
+import DeepLinking from '../DeepLinking';
+import NotificationReceiver from '../NotificationReceiver';
+import Loading from '../Handlers/Loading';
+var PushNotification = require('react-native-push-notification');
 
 const { height, width } = Dimensions.get('window');
 
@@ -29,6 +30,7 @@ export default class Main extends React.Component {
       loading: false
     }
     this._goToTest = this._goToTest.bind(this);
+    this._getTest = this._getTest.bind(this);
 
     // Use for testing and developing, enable to redo a test
     //AsyncStorage.removeItem('test-62');
@@ -58,6 +60,14 @@ export default class Main extends React.Component {
     Keyboard.dismiss();
     this._getUser();
     this._ShowLoading();
+    //const now = new Date();
+    // PushNotification.localNotificationSchedule({
+    //   message: "Vamos a aprobar!", // (required)
+    //   date: new Date( Date.now() + 10000),
+    //   actions: '["Posponer"]',
+    //   userInfo: { testID: 78},
+    
+    // });
   }
 
 
@@ -106,6 +116,8 @@ export default class Main extends React.Component {
   }
 
   async _getTest(id) {
+    console.log("se llama")
+    console.log(id)
     var exists = await this._existResult(id);
     if (exists) {
       Alert.alert('No se puede acceder', 'Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
@@ -269,6 +281,7 @@ export default class Main extends React.Component {
       <View style={styles.container}>
         <DeepLinking linkToTest={this._linkToTest.bind(this)} />
         <BackHandlerAndroid />
+        <NotificationReceiver getTest={this._getTest} />
         <Loading visible={this.state.loading} />
         <PTRView onRefresh={this._refresh} >
           <ScrollView style={styles.main}>

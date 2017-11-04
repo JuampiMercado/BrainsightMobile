@@ -87,7 +87,9 @@ export default class StageManager extends React.Component {
     }
     PushNotification.localNotificationSchedule({
       message: this.state.test.name + " está listo para continuar la siguiente etapa", // (required)
-      date: dateNotification
+      date: dateNotification,
+      actions: '["Posponer"]',
+      userInfo: { testID: this.state.test.id},
     });
 
   }
