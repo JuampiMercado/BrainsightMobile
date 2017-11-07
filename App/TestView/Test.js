@@ -28,7 +28,7 @@ export default class Test extends React.Component {
     //Search test on AsyncStorage
     var test = this.state.test;
     try {
-      let storTest = await AsyncStorage.getItem('test-' + this.state.test.id);
+      let storTest = await AsyncStorage.getItem(this.state.user.id+'-test-' + this.state.test.id);
       if (!storTest) {
         console.log("Token not set");
       } else {

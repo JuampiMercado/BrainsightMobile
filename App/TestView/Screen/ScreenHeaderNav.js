@@ -13,9 +13,9 @@ export default class ScreenHeaderNav extends React.Component {
     SensorManager.stopAccelerometer();
   }
 
-  
-    
-  
+
+
+
   render() {
     let element = null;
     const position = this.props.position || 'right';
@@ -53,7 +53,7 @@ class ScreenLeftNav extends React.Component {
   cancelTest() {
     this.props._stopSensors();
     this.props.navigation.state.params._enableContinue(false);
-    AsyncStorage.removeItem('test-' + this.props.navigation.state.params.test.id);
+    AsyncStorage.removeItem(this.props.navigation.state.params.user.id + '-test-' + this.props.navigation.state.params.test.id);
     this.props.navigation.state.params.PersistResults(0);
   }
 

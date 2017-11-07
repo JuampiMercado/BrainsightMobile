@@ -66,7 +66,7 @@ export default class Main extends React.Component {
     //   date: new Date( Date.now() + 10000),
     //   actions: '["Posponer"]',
     //   userInfo: { testID: 78},
-    
+
     // });
   }
 
@@ -121,7 +121,7 @@ export default class Main extends React.Component {
     var exists = await this._existResult(id);
     if (exists) {
       Alert.alert('No se puede acceder', 'Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
-        [{ text: 'Continuar', onPress: () => { AsyncStorage.removeItem('test-' + id); this.setState({ linkID: false })} },],
+        [{ text: 'Continuar', onPress: () => { AsyncStorage.removeItem(this.state.user.id + '-test-' + id); this.setState({ linkID: false })} },],
         { cancelable: false }
       )
     }
@@ -149,7 +149,7 @@ export default class Main extends React.Component {
   _isPublished(test){
     if (!test.isPublished){
       //El test ya no esta publicado, entonces lo elimino del storage, y no lo dejo ingresar
-      AsyncStorage.removeItem('test-' + test.id);
+      AsyncStorage.removeItem(this.state.user.id + '-test-' + test.id);
       Alert.alert('No se puede acceder', 'El test no se encuentra disponible para su ejecución.',
         [{ text: 'Continuar', onPress: () => this.props.navigation.navigate('Main') },],
         { cancelable: false }

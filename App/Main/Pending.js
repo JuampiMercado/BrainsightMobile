@@ -42,7 +42,7 @@ export default class Pending extends React.Component {
     let keys = await AsyncStorage.getAllKeys();
     let list = [];
     for(var i = 0, len = keys.length; i < len; i++){
-      if(keys[i].indexOf('test-') != -1){
+      if(keys[i].indexOf(this.props.navigation.state.params.user.id + '-test-') != -1){
         let test = await AsyncStorage.getItem(keys[i]);
         list.push(JSON.parse(test));
       }

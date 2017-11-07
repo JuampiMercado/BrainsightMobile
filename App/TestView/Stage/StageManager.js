@@ -183,7 +183,7 @@ export default class StageManager extends React.Component {
           msg = 'La información fue enviada correctamente.';
           description ='Muchas gracias por colaborar. Presione continuar para volver a la pantalla principal';
           var id = 0;
-          AsyncStorage.removeItem('test-' + result.test_id);
+          AsyncStorage.removeItem(this.state.user.id + '-test-' + result.test_id);
       } else {
           let error = res;
           throw error;
@@ -259,7 +259,7 @@ export default class StageManager extends React.Component {
     var test = this.state.test;
     test.data = this.state.stages;
     var value = JSON.stringify(test);
-    AsyncStorage.setItem("test-" + testID, value);
+    AsyncStorage.setItem(this.state.user.id + "-test-" + testID, value);
   }
 
   _PersistResults(state)
