@@ -10,6 +10,8 @@ import {
 	StatusBar,
 	View
 } from 'react-native';
+
+console.disableYellowBox = true;
 //import App from './App/App';
 //import DeepLinking from './App/DeepLinking';
 import Router from './App/Router'
