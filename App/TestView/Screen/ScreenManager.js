@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableHighlight, Text, TextInput, StyleSheet, AsyncStorage, DeviceEventEmitter, NativeModules, Keyboard } from 'react-native';
 import ScreenHeaderNav from './ScreenHeaderNav'
-import { StackNavigator,NavigationActions } from 'react-navigation';
+import { StackNavigator, NavigationActions } from 'react-navigation';
 import Screen from './Screen';
 import { SensorManager } from 'NativeModules';
 
@@ -31,18 +31,22 @@ export default class ScreenManager extends React.Component {
       enableContinue: this.props.navigation.state.params._shouldEnableContinue(params.currentScreen)
     }
 
+    this._SaveState = this._SaveState.bind(this);
   }
 
-  /* shouldComponentUpdate(nextProps, nextState) {
-     if (this.state.currentScreen !== nextState.currentScreen) {
-       return true;
-     }
-     if (this.state.currentStage !== nextState.currentStage) {
-       return true;
-     }
-     return false;
-   }
- */
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.currentScreen !== nextState.currentScreen) {
+      return true;
+    }
+    if (this.state.currentStage !== nextState.currentStage) {
+      return true;
+    }
+    if (this.state.enableContinue !== nextState.enableContinue) {
+      return true;
+    }
+    return false;
+  }
+
   static navigationOptions = ({ navigation }) => ({
     title: '',
     headerLeft: (<ScreenHeaderNav position={'left'} navigation={navigation} />),
@@ -51,8 +55,7 @@ export default class ScreenManager extends React.Component {
     headerTintColor: '#FFF',
   });
 
-  componentWillMount(){
-    this.sensors
+  componentWillMount() {
     this.props.navigation.setParams({
       _enableContinue: this._enableContinue.bind(this)
     });
@@ -102,29 +105,17 @@ export default class ScreenManager extends React.Component {
         stepCounter: 0,
       }
 
-      this.setState({ currentScreen: this.state.currentScreen + 1, enableContinue: this.props.navigation.state.params._shouldEnableContinue(this.state.currentScreen + 1), ...sensors });
-      // this.props.navigation.navigate('ScreenManager',
-      //   {
-      //     user: this.state.user,
-      //     test: this.state.test,
-      //     screens: this.state.screens,
-      //     currentScreen: this.state.currentScreen + 1,
-      //     stages: this.state.stages,
-      //     currentStage: this.state.currentStage,
-      //     lastStage: this.state.lastStage,
-      //     SaveState: this.props.navigation.state.params.SaveState,
-      //     SaveAsyncStorage: this.props.navigation.state.params.SaveAsyncStorage,
-      //     SetCompleteElement: this.props.navigation.state.params.SetCompleteElement,
-      //     PersistResults: this.props.navigation.state.params.PersistResults,
-      //     setSensorValue: this.props.navigation.state.params.setSensorValue
-      //   }
-      // );
+      this.setState({
+        currentScreen: this.state.currentScreen + 1,
+        enableContinue: this.props.navigation.state.params._shouldEnableContinue(this.state.currentScreen + 1),
+        ...sensors
+      });
     }
   }
 
   _startSensors() {
-    this._initSensors();
     this._bindSensorsEvent();
+    this._initSensors();
   }
 
   _initSensors() {
@@ -132,8 +123,7 @@ export default class ScreenManager extends React.Component {
     SensorManager.startLightSensor(800);
     SensorManager.startGyroscope(800);
     SensorManager.startAccelerometer(800);
-    SensorManager.startStepCounter(1000);
-
+    SensorManager.startStepCounter(800);
   }
 
   _bindSensorsEvent() {
@@ -166,14 +156,13 @@ export default class ScreenManager extends React.Component {
     var reaction = this.state.reaction;
     var now = new Date();
     reaction.end = now;
-    debugger;
-    reaction.difference = Number(now - reaction.begin)/1000;
+    reaction.difference = Number(now - reaction.begin) / 1000;
     var sensors = { reaction: reaction, accelerometer: this.state.accelerometer, thermometer: this.state.thermometer, light: this.state.light, gyroscope: this.state.gyroscope, stepCounter: this.state.stepCounter }
     this.props.navigation.state.params.setSensorValue(this.state.currentScreen, sensors);
   }
 
-  _enableContinue(state){
-    this.setState({enableContinue: state});
+  _enableContinue(state) {
+    this.setState({ enableContinue: state });
   }
 
   _SaveState(element, value) {
@@ -184,15 +173,15 @@ export default class ScreenManager extends React.Component {
   }
 
   render() {
-    const nextButton =  {
-      backgroundColor: this.state.enableContinue ? '#000000' : '#A9A8A8' ,
+    const nextButton = {
+      backgroundColor: this.state.enableContinue ? '#000000' : '#A9A8A8',
       paddingVertical: 15,
       marginTop: 15,
       padding: 15,
     }
     return (
       <View style={styles.container}>
-        <Screen screen={this.state.screens[this.state.currentScreen]} navigation={this.props.navigation} _SaveState={this._SaveState.bind(this)} />
+        <Screen screen={this.state.screens[this.state.currentScreen]} navigation={this.props.navigation} _SaveState={this._SaveState} />
         <View>
           <TouchableHighlight
             disabled={!this.state.enableContinue}

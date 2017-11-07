@@ -27,13 +27,13 @@ export default class Main extends React.Component {
       refreshing: false,
       linkID: linkID,
       dataSource: new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 }),
-      loading: false
+      loading: true
     }
     this._goToTest = this._goToTest.bind(this);
     this._getTest = this._getTest.bind(this);
 
     // Use for testing and developing, enable to redo a test
-    //AsyncStorage.removeItem('test-62');
+    //AsyncStorage.removeItem('test-89');
   }
 
   static navigationOptions = ({ navigation }) => ({
@@ -51,15 +51,21 @@ export default class Main extends React.Component {
     if (this.state.user !== nextState.user) {
       return true;
     }
-    if(this.state.linkID !== nextState.linkID)
+    if (this.state.linkID !== nextState.linkID) {
       return true
+    }
+    if (this.state.error !== nextState.error) {
+      return true
+    }
+    if (this.state.loading !== nextState.loading) {
+      return true
+    }
     return false;
   }
 
   componentWillMount() {
     Keyboard.dismiss();
     this._getUser();
-    this._ShowLoading();
     //const now = new Date();
     // PushNotification.localNotificationSchedule({
     //   message: "Vamos a aprobar!", // (required)
@@ -70,13 +76,12 @@ export default class Main extends React.Component {
     // });
   }
 
-
-  _ShowLoading(){
-    this.setState({loading: true});
-    setTimeout(() => { this.setState({loading: false}) }, 200)
+  _ShowLoading() {
+    this.setState({ loading: true });
   }
-
-
+  _HideLoading() {
+    this.setState({ loading: false });
+  }
 
   _refresh = () => {
     return new Promise((resolve) => {
@@ -90,7 +95,10 @@ export default class Main extends React.Component {
     try {
       let user = await AsyncStorage.getItem('user');
       if (user != null && user != undefined && user != null) {
-        this.setState({ user: JSON.parse(user) });
+        this.setState({
+          user: JSON.parse(user),
+          loading: true
+        });
         this.props.navigation.setParams({
           user: JSON.parse(user)
         })
@@ -121,14 +129,14 @@ export default class Main extends React.Component {
     var exists = await this._existResult(id);
     if (exists) {
       Alert.alert('No se puede acceder', 'Usted ya ha realizado este test anteriormente. Muchas gracias por su colaboración.',
-        [{ text: 'Continuar', onPress: () => { AsyncStorage.removeItem(this.state.user.id + '-test-' + id); this.setState({ linkID: false })} },],
+        [{ text: 'Continuar', onPress: () => { AsyncStorage.removeItem(this.state.user.id + '-test-' + id); this.setState({ linkID: false }) } },],
         { cancelable: false }
       )
     }
     else {
       var test = await this._fetchTest(id);
       var isPublished = await this._isPublished(test);
-      if(!isPublished) return false;
+      if (!isPublished) return false;
       if (test && test != undefined) {
         this._goToTest(test);
       }
@@ -146,8 +154,8 @@ export default class Main extends React.Component {
   _existResult(testid) {
     return this._fetchResult(this.state.user.id, testid);
   }
-  _isPublished(test){
-    if (!test.isPublished){
+  _isPublished(test) {
+    if (!test.isPublished) {
       //El test ya no esta publicado, entonces lo elimino del storage, y no lo dejo ingresar
       AsyncStorage.removeItem(this.state.user.id + '-test-' + test.id);
       Alert.alert('No se puede acceder', 'El test no se encuentra disponible para su ejecución.',
@@ -177,8 +185,12 @@ export default class Main extends React.Component {
   async _fetchListOfTests(intentos, userid) {
     console.log('userid');
     console.log(userid);
+    this._ShowLoading();
     if (intentos == 0) {
-      this.setState({ error: 'No se han podido descargar test. Por favor, intentelo de nuevo más tarde.' })
+      this.setState({
+        error: 'No se han podido descargar test. Por favor, intentelo de nuevo más tarde.',
+        loading: false
+      })
       return;
     }
     try {
@@ -196,8 +208,14 @@ export default class Main extends React.Component {
       if (response.status >= 200 && response.status < 300) {
         const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
         const show = JSON.parse(res).length == 0 ? "No hay test disponibles" : null;
-        this.setState({ testsList: JSON.parse(res), dataSource: ds.cloneWithRows(JSON.parse(res)), show: show });
+        this.setState({
+          testsList: JSON.parse(res),
+          dataSource: ds.cloneWithRows(JSON.parse(res)),
+          show: show,
+          loading: false
+        });
       } else {
+        this._HideLoading();
         let error = res;
         throw error;
       }
@@ -275,7 +293,7 @@ export default class Main extends React.Component {
 
 
   render() {
-    const msgToShow =  (this.state.error ? this.state.error : this.state.show);
+    const msgToShow = (this.state.error ? this.state.error : this.state.show);
     const msgStyle = (this.state.error ? styles.error : styles.message)
     return (
       <View style={styles.container}>
@@ -364,7 +382,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 40,
   },
-  message:{
+  message: {
     color: '#0D739C',
     margin: 10,
     fontWeight: 'bold',
